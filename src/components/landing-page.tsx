@@ -90,7 +90,7 @@ export async function LandingPage() {
       <PatternDots />
       
       {/* Navigation */}
-      <nav className="border-b border-borderSubtle bg-bg-card sticky top-0 z-50 backdrop-blur-sm bg-bg-card/95">
+      <nav className="border-b border-borderSubtle bg-bg-card sticky top-0 z-50 backdrop-blur-sm bg-bg-card/95 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="text-display-h2 text-primary-teal font-semibold">
@@ -98,12 +98,12 @@ export async function LandingPage() {
             </Link>
             <div className="flex items-center gap-4">
               <Link href="/auth/login">
-                <Button variant="ghost" className="text-body-m text-text-secondary hover:text-primary-teal">
+                <Button variant="ghost" className="text-body-m text-text-secondary hover:text-primary-teal hover:bg-transparent">
                   Sign In
                 </Button>
               </Link>
               <Link href="/auth/register">
-                <Button className="bg-primary-teal hover:bg-primary-teal/90 text-white">
+                <Button className="bg-primary-teal hover:bg-primary-teal/90 text-white transition-colors">
                   Get Started For Free
                 </Button>
               </Link>
@@ -156,7 +156,7 @@ export async function LandingPage() {
                 </Button>
               </Link>
               <Link href="/auth/login">
-                <Button size="lg" variant="outline" className="border-borderSubtle text-text-primary text-body-m px-8 h-12 hover:bg-bg-canvas">
+                <Button size="lg" variant="outline" className="border-borderSubtle text-text-primary text-body-m px-8 h-12 hover:bg-bg-canvas hover:border-borderSubtle transition-all">
                   Sign In
                 </Button>
               </Link>
@@ -226,7 +226,7 @@ export async function LandingPage() {
           </div>
           <div className="text-center">
             <Link href="/app/question-bank">
-              <Button variant="outline" className="border-borderSubtle text-text-primary hover:bg-bg-canvas">
+              <Button variant="outline" className="border-borderSubtle text-text-primary hover:bg-bg-canvas hover:border-primary-teal/50 transition-all">
                 Explore All Exams
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
@@ -319,7 +319,7 @@ export async function LandingPage() {
           </div>
           <div className="text-center">
             <Link href="/app/tests">
-              <Button variant="outline" className="border-borderSubtle text-text-primary hover:bg-bg-card">
+              <Button variant="outline" className="border-borderSubtle text-text-primary hover:bg-bg-card hover:border-primary-teal/50 transition-all">
                 Explore All Test Series
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
@@ -426,7 +426,7 @@ export async function LandingPage() {
                   </li>
                 </ul>
                 <Link href="/auth/register" className="block">
-                  <Button className="w-full bg-white text-text-primary hover:bg-bg-canvas border border-borderSubtle">
+                  <Button className="w-full bg-white text-text-primary hover:bg-bg-canvas hover:text-text-primary border border-borderSubtle hover:border-primary-teal/30 transition-all">
                     Get Started Free
                   </Button>
                 </Link>
@@ -492,7 +492,7 @@ export async function LandingPage() {
                   </li>
                 </ul>
                 <Link href="/auth/register" className="block">
-                  <Button className="w-full bg-primary-teal hover:bg-primary-teal/90 text-white shadow-md hover:shadow-lg transition-all">
+                  <Button className="w-full bg-primary-teal hover:bg-primary-teal/90 text-white shadow-md hover:shadow-lg transition-all font-medium">
                     Upgrade to Pro
                   </Button>
                 </Link>
@@ -565,7 +565,7 @@ export async function LandingPage() {
                   </li>
                 </ul>
                 <Link href="/auth/register" className="block">
-                  <Button className="w-full border-2 border-primary-teal bg-white text-primary-teal hover:bg-primary-teal hover:text-white transition-all">
+                  <Button className="w-full border-2 border-primary-teal bg-white text-primary-teal hover:bg-primary-teal hover:text-white transition-all font-medium">
                     Upgrade to Topper
                   </Button>
                 </Link>

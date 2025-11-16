@@ -54,13 +54,13 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white border-b">
+    <div className="min-h-screen bg-bg-canvas">
+      <nav className="bg-bg-card border-b border-borderSubtle sticky top-0 z-50 backdrop-blur-sm bg-bg-card/95">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex">
               <div className="flex-shrink-0 flex items-center">
-                <Link href="/app/dashboard" className="text-xl font-bold text-primary">
+                <Link href="/app/dashboard" className="text-display-h2 text-primary-teal font-semibold">
                   CrackGov.ai
                 </Link>
               </div>
@@ -69,10 +69,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-body-m font-medium transition-colors ${
                       pathname === item.href
-                        ? "border-primary text-gray-900"
-                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                        ? "border-primary-teal text-text-primary"
+                        : "border-transparent text-text-secondary hover:text-text-primary hover:border-borderSubtle"
                     }`}
                   >
                     {item.label}
@@ -84,18 +84,18 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               <ThemeToggle />
               <NotificationBell />
               <Link href="/app/profile">
-                <span className="text-sm text-gray-700 dark:text-gray-300 hover:text-primary cursor-pointer">
+                <span className="text-body-s text-text-primary hover:text-primary-teal cursor-pointer transition-colors">
                   {session?.user?.name || session?.user?.email}
                 </span>
               </Link>
               {session?.user?.subscriptionStatus === "free" && (
                 <Link href="/app/upgrade">
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" className="border-primary-teal text-primary-teal hover:bg-primary-teal hover:text-white">
                     Upgrade to Pro
                   </Button>
                 </Link>
               )}
-              <Button variant="ghost" size="sm" onClick={() => signOut()}>
+              <Button variant="ghost" size="sm" onClick={() => signOut()} className="text-text-secondary hover:text-text-primary">
                 Logout
               </Button>
             </div>

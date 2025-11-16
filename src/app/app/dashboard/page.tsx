@@ -13,114 +13,114 @@ export default async function DashboardPage() {
     <AppLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-display-h1 text-text-primary">
             Welcome back, {session.user.name || session.user.email}!
           </h1>
-          <p className="mt-2 text-gray-600">
+          <p className="mt-2 text-body-m text-text-secondary">
             Ready to ace your government exam? Let's get started.
           </p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <Card className="hover:shadow-lg transition-shadow" data-onboarding="study-plan">
+          <Card className="hover:shadow-lg transition-shadow border border-borderSubtle bg-bg-card" data-onboarding="study-plan">
             <CardHeader>
               <div className="flex items-center space-x-2">
-                <BookOpen className="h-5 w-5 text-primary" />
-                <CardTitle>Study Plan</CardTitle>
+                <BookOpen className="h-5 w-5 text-primary-teal" />
+                <CardTitle className="text-heading-h3 text-text-primary">Study Plan</CardTitle>
               </div>
-              <CardDescription>
+              <CardDescription className="text-body-s text-text-secondary">
                 Get your personalized AI study plan
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Link href="/app/study-plan">
-                <Button className="w-full">View Study Plan</Button>
+                <Button className="w-full bg-primary-teal hover:bg-primary-teal/90 text-white">View Study Plan</Button>
               </Link>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow" data-onboarding="mock-tests">
+          <Card className="hover:shadow-lg transition-shadow border border-borderSubtle bg-bg-card" data-onboarding="mock-tests">
             <CardHeader>
               <div className="flex items-center space-x-2">
-                <FileQuestion className="h-5 w-5 text-primary" />
-                <CardTitle>Next Mock Test</CardTitle>
+                <FileQuestion className="h-5 w-5 text-primary-teal" />
+                <CardTitle className="text-heading-h3 text-text-primary">Next Mock Test</CardTitle>
               </div>
-              <CardDescription>
+              <CardDescription className="text-body-s text-text-secondary">
                 Practice with AI-generated mock tests
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Link href="/app/tests">
-                <Button className="w-full">Take Mock Test</Button>
+                <Button className="w-full bg-primary-teal hover:bg-primary-teal/90 text-white">Take Mock Test</Button>
               </Link>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow">
+          <Card className="hover:shadow-lg transition-shadow border border-borderSubtle bg-bg-card">
             <CardHeader>
               <div className="flex items-center space-x-2">
-                <BookOpen className="h-5 w-5 text-primary" />
-                <CardTitle>Question Bank</CardTitle>
+                <BookOpen className="h-5 w-5 text-primary-teal" />
+                <CardTitle className="text-heading-h3 text-text-primary">Question Bank</CardTitle>
               </div>
-              <CardDescription>
+              <CardDescription className="text-body-s text-text-secondary">
                 Browse and practice from question library
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Link href="/app/question-bank">
-                <Button variant="outline" className="w-full">Browse Questions</Button>
+                <Button variant="outline" className="w-full border-borderSubtle text-text-primary hover:bg-bg-canvas">Browse Questions</Button>
               </Link>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow">
+          <Card className="hover:shadow-lg transition-shadow border border-borderSubtle bg-bg-card">
             <CardHeader>
               <div className="flex items-center space-x-2">
-                <TrendingUp className="h-5 w-5 text-primary" />
-                <CardTitle>Analytics</CardTitle>
+                <TrendingUp className="h-5 w-5 text-primary-teal" />
+                <CardTitle className="text-heading-h3 text-text-primary">Analytics</CardTitle>
               </div>
-              <CardDescription>
+              <CardDescription className="text-body-s text-text-secondary">
                 View detailed performance insights
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Link href="/app/analytics">
-                <Button variant="outline" className="w-full">View Analytics</Button>
+                <Button variant="outline" className="w-full border-borderSubtle text-text-primary hover:bg-bg-canvas">View Analytics</Button>
               </Link>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow" data-onboarding="doubts">
+          <Card className="hover:shadow-lg transition-shadow border border-borderSubtle bg-bg-card" data-onboarding="doubts">
             <CardHeader>
               <div className="flex items-center space-x-2">
-                <MessageCircle className="h-5 w-5 text-primary" />
-                <CardTitle>Ask a Doubt</CardTitle>
+                <MessageCircle className="h-5 w-5 text-primary-teal" />
+                <CardTitle className="text-heading-h3 text-text-primary">Ask a Doubt</CardTitle>
               </div>
-              <CardDescription>
+              <CardDescription className="text-body-s text-text-secondary">
                 Get instant answers from AI tutor
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Link href="/app/doubts">
-                <Button className="w-full">Ask Question</Button>
+                <Button className="w-full bg-primary-teal hover:bg-primary-teal/90 text-white">Ask Question</Button>
               </Link>
             </CardContent>
           </Card>
         </div>
 
-        <Card data-onboarding="test-history">
+        <Card className="border border-borderSubtle bg-bg-card" data-onboarding="test-history">
           <CardHeader>
             <div className="flex items-center space-x-2">
-              <History className="h-5 w-5 text-primary" />
-              <CardTitle>Test History</CardTitle>
+              <History className="h-5 w-5 text-primary-teal" />
+              <CardTitle className="text-heading-h3 text-text-primary">Test History</CardTitle>
             </div>
-            <CardDescription>
+            <CardDescription className="text-body-s text-text-secondary">
               View your past test attempts and track progress
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Link href="/app/test-history">
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="w-full border-borderSubtle text-text-primary hover:bg-bg-canvas">
                 View Test History
               </Button>
             </Link>
