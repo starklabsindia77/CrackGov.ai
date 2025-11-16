@@ -115,6 +115,13 @@ export async function POST(
       console.error("Error sending test result email:", error);
     });
 
+    // Update leaderboard (async, don't wait)
+    fetch(`${process.env.NEXTAUTH_URL || "http://localhost:3000"}/api/leaderboard/update?userId=${session.user.id}&exam=${test.exam}`, {
+      method: "POST",
+    }).catch((error) => {
+      console.error("Error updating leaderboard:", error);
+    });
+
     return NextResponse.json({
       score,
       total,

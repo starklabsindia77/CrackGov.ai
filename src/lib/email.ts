@@ -162,3 +162,14 @@ export async function sendWeeklyProgressEmail(
   // });
 }
 
+export async function sendEmailCampaign(
+  campaignId: string,
+  userIds: string[]
+): Promise<void> {
+  // TODO: Integrate with email service
+  // This would fetch campaign details, user emails, and send emails
+  console.log(`Email campaign (stubbed): Campaign ${campaignId}`);
+  console.log(`Sending to ${userIds.length} users`);
+  // In production, batch send emails and update recipient status
+}
+

@@ -44,8 +44,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     { href: "/app/study-plan", label: "Study Plan" },
     { href: "/app/tests", label: "Mock Tests" },
     { href: "/app/question-bank", label: "Question Bank" },
+    { href: "/app/flashcards", label: "Flashcards" },
+    { href: "/app/study-groups", label: "Study Groups" },
     { href: "/app/test-history", label: "Test History" },
     { href: "/app/analytics", label: "Analytics" },
+    { href: "/app/leaderboard", label: "Leaderboard" },
     { href: "/app/doubts", label: "Ask Doubts" },
     { href: "/faq", label: "Help" },
   ];

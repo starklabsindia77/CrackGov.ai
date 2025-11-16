@@ -34,6 +34,12 @@ model User {
   studyStreaks        StudyStreak[]
   userSegments        UserSegment[]
   questionAttempts    QuestionAttempt[]
+  flashcards         Flashcard[]
+  flashcardReviews   FlashcardReview[]
+  studyGroups        StudyGroup[]
+  groupMembers       GroupMember[]
+  leaderboardEntries LeaderboardEntry[]
+  campaignRecipients CampaignRecipient[]
 }
 
 model Test {
@@ -399,5 +405,150 @@ model UserSegmentMembership {
   @@unique([userId, segmentId])
   @@index([userId])
   @@index([segmentId])
+}
+
+// Flashcard System
+model Flashcard {
+  id          String   @id @default(cuid())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  front       String   // Question or front side
+  back        String   // Answer or back side
+  topic       String?  // Optional topic categorization
+  exam        String?  // Optional exam type
+  tags        String[] // Tags for organization
+  difficulty  Int      @default(0) // 0-5, for spaced repetition
+  lastReviewed DateTime?
+  nextReview  DateTime @default(now()) // Next review date based on spaced repetition
+  reviewCount Int      @default(0)
+  correctCount Int     @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  reviews     FlashcardReview[]
+
+  @@index([userId])
+  @@index([userId, nextReview])
+  @@index([topic])
+  @@index([exam])
+}
+
+model FlashcardReview {
+  id          String   @id @default(cuid())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  flashcard   Flashcard @relation(fields: [flashcardId], references: [id], onDelete: Cascade)
+  flashcardId String
+  result      String   // "correct", "incorrect", "hard"
+  timeSpent   Int?     // Time in seconds
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([flashcardId])
+  @@index([userId, createdAt])
+}
+
+// Study Groups
+model StudyGroup {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  exam        String?  // Focus exam type
+  createdBy   User     @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  createdById String
+  isPublic    Boolean  @default(true)
+  maxMembers  Int      @default(50)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members     GroupMember[]
+  posts       GroupPost[]
+
+  @@index([createdById])
+  @@index([isPublic])
+}
+
+model GroupMember {
+  id          String     @id @default(cuid())
+  group       StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId     String
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  role        String     @default("member") // "admin", "member"
+  joinedAt    DateTime   @default(now())
+
+  @@unique([userId, groupId])
+  @@index([userId])
+  @@index([groupId])
+}
+
+model GroupPost {
+  id          String     @id @default(cuid())
+  group       StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId     String
+  authorId    String     // User ID (not a relation to avoid circular dependency)
+  content     String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([groupId])
+  @@index([groupId, createdAt])
+}
+
+// Leaderboards
+model LeaderboardEntry {
+  id          String   @id @default(cuid())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  exam        String?  // Exam-specific leaderboard
+  period      String   // "daily", "weekly", "monthly", "all-time"
+  score       Int      // Points or score
+  rank        Int?     // Calculated rank
+  metadata    Json?    // Additional data (tests taken, accuracy, etc.)
+  periodStart DateTime  // Start of the period
+  periodEnd   DateTime? // End of the period
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, exam, period, periodStart])
+  @@index([userId])
+  @@index([exam, period, periodStart])
+  @@index([period, periodStart, score])
+}
+
+// Email Campaigns
+model EmailCampaign {
+  id          String   @id @default(cuid())
+  name        String
+  subject     String
+  content     String   // HTML or plain text
+  segmentId   String?  // Target segment
+  status      String   @default("draft") // "draft", "scheduled", "sending", "sent", "failed"
+  scheduledAt DateTime?
+  sentAt      DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  segment     UserSegment? @relation(fields: [segmentId], references: [id], onDelete: SetNull)
+  recipients  CampaignRecipient[]
+
+  @@index([status])
+  @@index([scheduledAt])
+}
+
+model CampaignRecipient {
+  id          String        @id @default(cuid())
+  campaign    EmailCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId  String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  status      String        @default("pending") // "pending", "sent", "failed", "bounced"
+  sentAt      DateTime?
+  error       String?
+  createdAt   DateTime      @default(now())
+
+  @@unique([campaignId, userId])
+  @@index([campaignId])
+  @@index([userId])
 }
 
