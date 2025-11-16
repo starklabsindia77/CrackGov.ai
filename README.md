@@ -53,6 +53,7 @@ An MVP SaaS web application for AI-powered government exam preparation built wit
    NEXTAUTH_SECRET="your-secret-key-here"
    ENCRYPTION_KEY="your-32-byte-encryption-key-here"
    OPENAI_API_KEY="your-openai-api-key-here"
+   # Razorpay credentials are optional - configure via Admin Panel > Payment Config
    ```
 
    Generate secure keys:
@@ -177,8 +178,10 @@ src/
 | `NEXTAUTH_SECRET` | Secret key for NextAuth.js |
 | `ENCRYPTION_KEY` | 32-byte key for encrypting API keys at rest |
 | `OPENAI_API_KEY` | OpenAI API key (legacy, now managed via admin panel) |
-| `RAZORPAY_KEY_ID` | Razorpay API key ID (for payment integration) |
-| `RAZORPAY_KEY_SECRET` | Razorpay API key secret (for payment integration) |
+| `RAZORPAY_KEY_ID` | Razorpay API key ID (optional fallback, now managed via admin panel) |
+| `RAZORPAY_KEY_SECRET` | Razorpay API key secret (optional fallback, now managed via admin panel) |
+
+**Note:** Razorpay credentials are now managed via the Admin Panel > Payment Config. Environment variables are optional fallback values.
 
 ## Development
 
@@ -245,6 +248,7 @@ The admin panel provides comprehensive management of AI providers and configurat
    - **API Keys**: Add up to 10 encrypted API keys per provider with priority-based rotation
    - **Feature Config**: Set primary/secondary providers for each feature with automatic failover
    - **Health Monitoring**: Track key health, failures, and system status
+   - **Payment Config**: Manage Razorpay payment gateway credentials (encrypted storage)
 
 4. **AI Orchestrator**:
    - All AI calls go through the central orchestrator

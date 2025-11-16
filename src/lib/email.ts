@@ -173,3 +173,35 @@ export async function sendEmailCampaign(
   // In production, batch send emails and update recipient status
 }
 
+export async function sendOTPEmail(email: string, otp: string): Promise<void> {
+  console.log("OTP email (stubbed):");
+  console.log(`To: ${email}`);
+  console.log(`OTP: ${otp}`);
+  console.log(`Valid for 10 minutes`);
+  
+  // In production, use:
+  // await sendEmail({
+  //   to: email,
+  //   subject: "Your OTP for CrackGov.ai",
+  //   html: `
+  //     <h2>Your OTP Code</h2>
+  //     <p>Your OTP code is: <strong>${otp}</strong></p>
+  //     <p>This code is valid for 10 minutes.</p>
+  //     <p>If you didn't request this code, please ignore this email.</p>
+  //   `,
+  // });
+}
+
+export async function sendOTPSMS(phone: string, otp: string): Promise<void> {
+  console.log("OTP SMS (stubbed):");
+  console.log(`To: ${phone}`);
+  console.log(`OTP: ${otp}`);
+  console.log(`Valid for 10 minutes`);
+  
+  // In production, integrate with SMS service (Twilio, AWS SNS, etc.):
+  // await smsService.send({
+  //   to: phone,
+  //   message: `Your CrackGov.ai OTP is ${otp}. Valid for 10 minutes.`,
+  // });
+}
+

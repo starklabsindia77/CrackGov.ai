@@ -40,10 +40,35 @@ export default function TakeTestPage() {
   const [submitting, setSubmitting] = useState(false);
   const [results, setResults] = useState<any>(null);
   const [error, setError] = useState("");
+  const [timeRemaining, setTimeRemaining] = useState<number | null>(null); // in seconds
+  const [timeLimit, setTimeLimit] = useState<number | null>(null); // in minutes
+  const [timerActive, setTimerActive] = useState(false);
 
   useEffect(() => {
     fetchTest();
   }, [testId]);
+
+  // Timer effect
+  useEffect(() => {
+    if (!timerActive || timeRemaining === null || timeRemaining <= 0) {
+      if (timeRemaining === 0 && !submitting) {
+        handleSubmit();
+      }
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setTimeRemaining((prev) => {
+        if (prev === null || prev <= 1) {
+          setTimerActive(false);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [timerActive, timeRemaining, submitting]);
 
   const fetchTest = async () => {
     try {
@@ -53,6 +78,14 @@ export default function TakeTestPage() {
       }
       const data = await response.json();
       setTest(data);
+      
+      // Initialize timer if timeLimit exists
+      if (data.timeLimit) {
+        const seconds = data.timeLimit * 60;
+        setTimeLimit(data.timeLimit);
+        setTimeRemaining(seconds);
+        setTimerActive(true);
+      }
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -65,12 +98,15 @@ export default function TakeTestPage() {
   };
 
   const handleSubmit = async () => {
+    if (submitting) return;
+    
+    setTimerActive(false);
     setSubmitting(true);
     try {
       const response = await fetch(`/api/tests/${testId}/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ answers }),
+        body: JSON.stringify({ answers, timeSpent: timeLimit ? (timeLimit * 60 - (timeRemaining || 0)) : null }),
       });
 
       if (!response.ok) {
@@ -87,6 +123,12 @@ export default function TakeTestPage() {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
   if (loading) {
@@ -263,8 +305,19 @@ export default function TakeTestPage() {
               Question {currentQuestion + 1} of {totalQuestions}
             </p>
           </div>
-          <div className="text-sm">
-            Answered: {answeredCount}/{totalQuestions}
+          <div className="flex items-center gap-4">
+            {timeRemaining !== null && (
+              <div className={`px-4 py-2 rounded-lg font-mono text-lg font-semibold ${
+                timeRemaining < 300 ? "bg-state-error text-white" : 
+                timeRemaining < 600 ? "bg-yellow-500 text-white" : 
+                "bg-primary-teal text-white"
+              }`}>
+                {formatTime(timeRemaining)}
+              </div>
+            )}
+            <div className="text-sm">
+              Answered: {answeredCount}/{totalQuestions}
+            </div>
           </div>
         </div>
 

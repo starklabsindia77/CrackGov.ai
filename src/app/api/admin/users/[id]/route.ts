@@ -8,7 +8,7 @@ const updateUserSchema = z.object({
   name: z.string().optional(),
   email: z.string().email().optional(),
   role: z.enum(["user", "admin"]).optional(),
-  subscriptionStatus: z.enum(["free", "pro"]).optional(),
+  subscriptionStatus: z.enum(["free", "pro", "topper"]).optional(),
   emailVerified: z.boolean().optional(),
 });
 

@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 import crypto from "crypto";
+import { getPaymentConfig } from "@/lib/payment-config";
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,13 +12,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Get payment config from database
+    const paymentConfig = await getPaymentConfig();
+    if (!paymentConfig) {
+      return NextResponse.json(
+        { error: "Payment gateway not configured" },
+        { status: 503 }
+      );
+    }
+
     const body = await request.json();
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = body;
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, plan } = body;
+    
+    // Validate plan
+    const validPlans = ["pro", "topper"];
+    const selectedPlan = plan || "pro"; // Default to pro for backward compatibility
+    if (!validPlans.includes(selectedPlan)) {
+      return NextResponse.json(
+        { error: "Invalid plan selected" },
+        { status: 400 }
+      );
+    }
 
     // Verify payment signature
     const text = `${razorpay_order_id}|${razorpay_payment_id}`;
     const generatedSignature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET || "")
+      .createHmac("sha256", paymentConfig.keySecret)
       .update(text)
       .digest("hex");
 
@@ -31,7 +51,7 @@ export async function POST(request: NextRequest) {
     // Update user subscription
     await prisma.user.update({
       where: { id: session.user.id },
-      data: { subscriptionStatus: "pro" },
+      data: { subscriptionStatus: selectedPlan },
     });
 
     return NextResponse.json({

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
+import { getPaymentConfig } from "@/lib/payment-config";
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,16 +11,29 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Check if Razorpay is configured
-    if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+    const body = await request.json().catch(() => ({}));
+    const { plan } = body;
+    const selectedPlan = plan || "pro";
+    
+    // Validate plan
+    if (!["pro", "topper"].includes(selectedPlan)) {
+      return NextResponse.json(
+        { error: "Invalid plan. Must be 'pro' or 'topper'" },
+        { status: 400 }
+      );
+    }
+
+    // Check if Razorpay is configured in database
+    const paymentConfig = await getPaymentConfig();
+    if (!paymentConfig) {
       // Fallback to stub if Razorpay not configured
       const user = await prisma.user.update({
         where: { id: session.user.id },
-        data: { subscriptionStatus: "pro" },
+        data: { subscriptionStatus: selectedPlan },
       });
 
       return NextResponse.json({
-        message: "Subscription upgraded successfully (demo mode - Razorpay not configured)",
+        message: `Subscription upgraded to ${selectedPlan} successfully (demo mode - Razorpay not configured)`,
         subscriptionStatus: user.subscriptionStatus,
       });
     }

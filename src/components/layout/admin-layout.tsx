@@ -14,6 +14,7 @@ import {
   FileText,
   BarChart3,
   Users,
+  CreditCard,
 } from "lucide-react";
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -28,6 +29,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
     { href: "/admin/segments", label: "Segments", icon: Users },
     { href: "/admin/question-bank", label: "Question Bank", icon: FileText },
     { href: "/admin/campaigns", label: "Campaigns", icon: FileText },
+    { href: "/admin/payment-config", label: "Payment Config", icon: CreditCard },
     { href: "/admin/providers", label: "AI Providers", icon: Zap },
     { href: "/admin/features", label: "Features", icon: Settings },
     { href: "/admin/health", label: "Health", icon: Activity },

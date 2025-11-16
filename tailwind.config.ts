@@ -22,7 +22,9 @@ const config: Config = {
   			},
   			primary: {
   				DEFAULT: 'hsl(var(--primary))',
-  				foreground: 'hsl(var(--primary-foreground))'
+  				foreground: 'hsl(var(--primary-foreground))',
+  				teal: 'var(--primary-teal)',
+  				'teal-light': 'var(--primary-teal-light)'
   			},
   			secondary: {
   				DEFAULT: 'hsl(var(--secondary))',
@@ -54,7 +56,27 @@ const config: Config = {
   				'3': 'hsl(var(--chart-3))',
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
+  			},
+  			// Color Styles
+  			ink: {
+  				dark: 'var(--ink-dark)'
+  			},
+  			text: {
+  				primary: 'var(--text-primary)',
+  				secondary: 'var(--text-secondary)'
+  			},
+  			borderSubtle: 'var(--border-subtle)',
+  			bg: {
+  				canvas: 'var(--bg-canvas)',
+  				card: 'var(--bg-card)'
+  			},
+  			state: {
+  				error: 'var(--state-error)',
+  				success: 'var(--state-success)'
   			}
+  		},
+  		fontFamily: {
+  			sans: ['var(--font-inter)', 'Inter', 'system-ui', 'sans-serif']
   		},
   		borderRadius: {
   			lg: 'var(--radius)',

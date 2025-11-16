@@ -16,8 +16,12 @@ model User {
   passwordHash      String
   name              String?
   role              String   @default("user") // "user" | "admin"
-  subscriptionStatus String  @default("free") // "free" | "pro"
+  subscriptionStatus String  @default("free") // "free" | "pro" | "topper"
   emailVerified     Boolean  @default(false)
+  phone             String?  @unique
+  phoneVerified     Boolean  @default(false)
+  dailyStudyGoal    Int?     // Hours per day
+  preferredExams    String[] // Array of exam types
   createdAt         DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -32,7 +36,7 @@ model User {
   bookmarks           Bookmark[]
   notes               Note[]
   studyStreaks        StudyStreak[]
-  userSegments        UserSegment[]
+  segmentMemberships  UserSegmentMembership[]
   questionAttempts    QuestionAttempt[]
   flashcards         Flashcard[]
   flashcardReviews   FlashcardReview[]
@@ -40,6 +44,9 @@ model User {
   groupMembers       GroupMember[]
   leaderboardEntries LeaderboardEntry[]
   campaignRecipients CampaignRecipient[]
+  subscriptionUsages SubscriptionUsage[]
+  dailyTasks         DailyTask[]
+  pyqAnalyses        PyqAnalysis[]
 }
 
 model Test {
@@ -47,6 +54,7 @@ model Test {
   user      User            @relation(fields: [userId], references: [id])
   userId    String
   exam      String
+  timeLimit Int?            // in minutes
   createdAt DateTime        @default(now())
 
   questions TestQuestion[]
@@ -389,6 +397,7 @@ model UserSegment {
   updatedAt   DateTime @updatedAt
 
   memberships UserSegmentMembership[]
+  campaigns   EmailCampaign[]
 
   @@index([name])
 }
@@ -550,5 +559,118 @@ model CampaignRecipient {
   @@unique([campaignId, userId])
   @@index([campaignId])
   @@index([userId])
+}
+
+// Payment Gateway Configuration
+model PaymentConfig {
+  id          String   @id @default(cuid())
+  provider    String   @default("razorpay") // "razorpay", "stripe", etc.
+  keyId       String   // Encrypted key ID
+  keySecret   String   // Encrypted key secret
+  isActive    Boolean  @default(true)
+  environment String   @default("test") // "test" or "production"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([provider, environment])
+  @@index([provider])
+  @@index([isActive])
+}
+
+// Subscription Usage Tracking
+model SubscriptionUsage {
+  id                String   @id @default(cuid())
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String
+  month             Int      // 1-12
+  year              Int
+  aiCallsCount      Int      @default(0)
+  mockTestsCount    Int      @default(0)
+  studyPlansCount   Int      @default(0)
+  doubtsCount       Int      @default(0)
+  notesGenerated    Int      @default(0)
+  flashcardsGenerated Int    @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([userId, month, year])
+  @@index([userId])
+  @@index([year, month])
+}
+
+// OTP Tokens for Phone/Email Verification
+model OtpToken {
+  id          String   @id @default(cuid())
+  identifier String   // Email or phone number
+  otp         String   // 6-digit OTP
+  type        String   // "email" | "phone" | "login"
+  expiresAt   DateTime
+  used        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([identifier, otp])
+  @@index([expiresAt])
+}
+
+// Daily Tasks/Goals
+model DailyTask {
+  id          String   @id @default(cuid())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  date        DateTime @default(now())
+  taskType    String   // "study_plan", "mock_test", "flashcard", "doubt", "notes"
+  taskId      String?  // ID of the related task item
+  title       String
+  description String?
+  completed   Boolean  @default(false)
+  completedAt DateTime?
+  priority    Int      @default(0) // 0-5, higher is more important
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, date, taskType, taskId])
+  @@index([userId, date])
+  @@index([userId, completed])
+}
+
+// PYQ Analysis
+model PyqAnalysis {
+  id            String   @id @default(cuid())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  exam          String
+  year          Int
+  topicBreakdown Json    // Topic-wise performance
+  difficultyBreakdown Json // Difficulty-wise performance
+  weakAreas     String[] // Array of weak topics
+  strongAreas   String[] // Array of strong topics
+  recommendations Json?  // AI-generated recommendations
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([userId, exam, year])
+  @@index([userId])
+  @@index([exam, year])
+}
+
+// Previous Year Questions
+model PreviousYearQuestion {
+  id            String   @id @default(cuid())
+  exam          String
+  year          Int
+  subject       String?
+  topic         String?
+  question      String
+  options       Json     // array of strings
+  correctOption String
+  explanation   String?
+  difficulty    String   @default("medium")
+  paperType     String?  // "prelims", "mains", etc.
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([exam, year])
+  @@index([topic])
+  @@index([exam, year, topic])
 }
 

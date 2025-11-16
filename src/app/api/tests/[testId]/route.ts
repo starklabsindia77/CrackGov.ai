@@ -33,6 +33,7 @@ export async function GET(
     return NextResponse.json({
       id: test.id,
       exam: test.exam,
+      timeLimit: test.timeLimit,
       questions: test.questions.map((q) => ({
         id: q.id,
         question: q.question,
