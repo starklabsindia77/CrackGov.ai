@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Edit, Trash2, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
+import { DndSortableList } from "./dnd-sortable-list";
 
 interface Faq {
   id: string;
@@ -109,6 +110,37 @@ export function FaqsManager() {
     });
   };
 
+  const handleReorder = async (newOrder: Faq[]) => {
+    try {
+      // Optimistically update UI
+      setFaqs(newOrder);
+
+      // Update order in database
+      const response = await fetch("/api/admin/cms/reorder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "faqs",
+          items: newOrder.map((faq, index) => ({
+            id: faq.id,
+            order: index,
+          })),
+        }),
+      });
+
+      if (!response.ok) {
+        // Revert on error
+        fetchFaqs();
+        throw new Error("Failed to reorder FAQs");
+      }
+
+      toast.success("Order updated");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to reorder FAQs");
+      fetchFaqs(); // Refresh to get correct order
+    }
+  };
+
   if (loading) {
     return <div className="text-center py-8">Loading FAQs...</div>;
   }
@@ -185,45 +217,50 @@ export function FaqsManager() {
       <Card>
         <CardHeader>
           <CardTitle>All FAQs</CardTitle>
+          <CardDescription>
+            Drag and drop to reorder FAQs. Order affects display sequence.
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
-            {faqs.map((faq) => (
-              <div
-                key={faq.id}
-                className="flex items-start justify-between p-3 border rounded-lg"
-              >
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold">{faq.question}</h3>
-                    {faq.published ? (
-                      <Eye className="h-4 w-4 text-green-600" />
-                    ) : (
-                      <EyeOff className="h-4 w-4 text-gray-400" />
+          {faqs.length === 0 ? (
+            <p className="text-center text-muted-foreground py-8">No FAQs yet</p>
+          ) : (
+            <DndSortableList
+              items={faqs.sort((a, b) => a.order - b.order)}
+              onReorder={handleReorder}
+              className="space-y-2"
+              itemClassName="p-3 border rounded-lg bg-white dark:bg-gray-800"
+              renderItem={(faq) => (
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-semibold">{faq.question}</h3>
+                      {faq.published ? (
+                        <Eye className="h-4 w-4 text-green-600" />
+                      ) : (
+                        <EyeOff className="h-4 w-4 text-gray-400" />
+                      )}
+                    </div>
+                    {faq.category && (
+                      <span className="text-xs text-muted-foreground">{faq.category}</span>
                     )}
                   </div>
-                  {faq.category && (
-                    <span className="text-xs text-muted-foreground">{faq.category}</span>
-                  )}
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={() => handleEdit(faq)}>
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDelete(faq.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => handleEdit(faq)}>
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDelete(faq.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            ))}
-            {faqs.length === 0 && (
-              <p className="text-center text-muted-foreground py-8">No FAQs yet</p>
-            )}
-          </div>
+              )}
+            />
+          )}
         </CardContent>
       </Card>
     </div>

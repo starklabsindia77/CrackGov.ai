@@ -10,6 +10,7 @@ const pageSchema = z.object({
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
   published: z.boolean().optional(),
+  order: z.number().optional(),
 });
 
 export async function GET(request: NextRequest) {
@@ -17,7 +18,7 @@ export async function GET(request: NextRequest) {
     await requireAdmin();
 
     const pages = await prisma.page.findMany({
-      orderBy: { updatedAt: "desc" },
+      orderBy: [{ order: "asc" }, { createdAt: "desc" }],
     });
 
     return NextResponse.json({ pages });
@@ -40,8 +41,17 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const data = pageSchema.parse(body);
 
+    // Get max order to set new page at the end
+    const maxOrder = await prisma.page.aggregate({
+      _max: { order: true },
+    });
+    const newOrder = (maxOrder._max.order ?? -1) + 1;
+
     const page = await prisma.page.create({
-      data,
+      data: {
+        ...data,
+        order: data.order ?? newOrder,
+      },
     });
 
     return NextResponse.json({ page }, { status: 201 });

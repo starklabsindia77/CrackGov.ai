@@ -43,7 +43,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     { href: "/app/dashboard", label: "Dashboard" },
     { href: "/app/study-plan", label: "Study Plan" },
     { href: "/app/tests", label: "Mock Tests" },
+    { href: "/app/question-bank", label: "Question Bank" },
     { href: "/app/test-history", label: "Test History" },
+    { href: "/app/analytics", label: "Analytics" },
     { href: "/app/doubts", label: "Ask Doubts" },
     { href: "/faq", label: "Help" },
   ];

@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Edit, Trash2, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
+import { DndSortableList } from "./dnd-sortable-list";
 
 interface Page {
   id: string;
@@ -17,6 +18,7 @@ interface Page {
   metaTitle?: string;
   metaDescription?: string;
   published: boolean;
+  order: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -115,6 +117,37 @@ export function PagesManager() {
     });
   };
 
+  const handleReorder = async (newOrder: Page[]) => {
+    try {
+      // Optimistically update UI
+      setPages(newOrder);
+
+      // Update order in database
+      const response = await fetch("/api/admin/cms/reorder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "pages",
+          items: newOrder.map((page, index) => ({
+            id: page.id,
+            order: index,
+          })),
+        }),
+      });
+
+      if (!response.ok) {
+        // Revert on error
+        fetchPages();
+        throw new Error("Failed to reorder pages");
+      }
+
+      toast.success("Order updated");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to reorder pages");
+      fetchPages(); // Refresh to get correct order
+    }
+  };
+
   if (loading) {
     return <div className="text-center py-8">Loading pages...</div>;
   }
@@ -206,44 +239,48 @@ export function PagesManager() {
       <Card>
         <CardHeader>
           <CardTitle>All Pages</CardTitle>
-          <CardDescription>Manage your website pages</CardDescription>
+          <CardDescription>
+            Drag and drop to reorder pages. Order affects display sequence.
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
-            {pages.map((page) => (
-              <div
-                key={page.id}
-                className="flex items-center justify-between p-3 border rounded-lg"
-              >
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold">{page.title}</h3>
-                    {page.published ? (
-                      <Eye className="h-4 w-4 text-green-600" />
-                    ) : (
-                      <EyeOff className="h-4 w-4 text-gray-400" />
-                    )}
+          {pages.length === 0 ? (
+            <p className="text-center text-muted-foreground py-8">No pages yet</p>
+          ) : (
+            <DndSortableList
+              items={pages.sort((a, b) => a.order - b.order)}
+              onReorder={handleReorder}
+              className="space-y-2"
+              itemClassName="p-3 border rounded-lg bg-white dark:bg-gray-800"
+              renderItem={(page) => (
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-semibold">{page.title}</h3>
+                      {page.published ? (
+                        <Eye className="h-4 w-4 text-green-600" />
+                      ) : (
+                        <EyeOff className="h-4 w-4 text-gray-400" />
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground">/{page.slug}</p>
                   </div>
-                  <p className="text-sm text-muted-foreground">/{page.slug}</p>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={() => handleEdit(page)}>
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDelete(page.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => handleEdit(page)}>
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDelete(page.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            ))}
-            {pages.length === 0 && (
-              <p className="text-center text-muted-foreground py-8">No pages yet</p>
-            )}
-          </div>
+              )}
+            />
+          )}
         </CardContent>
       </Card>
     </div>

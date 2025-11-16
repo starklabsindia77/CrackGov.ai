@@ -21,7 +21,7 @@ export default async function DashboardPage() {
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <Card className="hover:shadow-lg transition-shadow" data-onboarding="study-plan">
             <CardHeader>
               <div className="flex items-center space-x-2">
@@ -52,6 +52,40 @@ export default async function DashboardPage() {
             <CardContent>
               <Link href="/app/tests">
                 <Button className="w-full">Take Mock Test</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="flex items-center space-x-2">
+                <BookOpen className="h-5 w-5 text-primary" />
+                <CardTitle>Question Bank</CardTitle>
+              </div>
+              <CardDescription>
+                Browse and practice from question library
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link href="/app/question-bank">
+                <Button variant="outline" className="w-full">Browse Questions</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="flex items-center space-x-2">
+                <TrendingUp className="h-5 w-5 text-primary" />
+                <CardTitle>Analytics</CardTitle>
+              </div>
+              <CardDescription>
+                View detailed performance insights
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link href="/app/analytics">
+                <Button variant="outline" className="w-full">View Analytics</Button>
               </Link>
             </CardContent>
           </Card>

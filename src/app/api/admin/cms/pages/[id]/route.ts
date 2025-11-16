@@ -10,6 +10,7 @@ const updatePageSchema = z.object({
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
   published: z.boolean().optional(),
+  order: z.number().optional(),
 });
 
 export async function GET(

@@ -32,6 +32,8 @@ model User {
   bookmarks           Bookmark[]
   notes               Note[]
   studyStreaks        StudyStreak[]
+  userSegments        UserSegment[]
+  questionAttempts    QuestionAttempt[]
 }
 
 model Test {
@@ -169,11 +171,13 @@ model Page {
   metaTitle   String?
   metaDescription String?
   published   Boolean  @default(false)
+  order       Int      @default(0) // For drag-and-drop ordering
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([slug])
   @@index([published])
+  @@index([order])
 }
 
 model Post {
@@ -322,5 +326,78 @@ model StudyStreak {
   @@unique([userId, date, activityType])
   @@index([userId])
   @@index([userId, date])
+}
+
+// Question Bank Models
+model QuestionBank {
+  id            String   @id @default(cuid())
+  exam          String   // e.g. "UPSC", "SSC", "Banking"
+  subject       String?  // Optional subject categorization
+  topic         String?  // Topic/subject area
+  question      String
+  options       Json     // array of strings
+  correctOption String
+  explanation   String?
+  difficulty    String   @default("medium") // "easy", "medium", "hard"
+  source        String?  // e.g. "Previous Year", "AI Generated"
+  year          Int?     // For previous year questions
+  tags          String[] // Array of tags for better search
+  usageCount    Int      @default(0) // How many times used in tests
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  createdBy     String?  // Admin user ID if manually created
+
+  attempts      QuestionAttempt[]
+
+  @@index([exam])
+  @@index([topic])
+  @@index([difficulty])
+  @@index([exam, topic])
+  @@index([exam, difficulty])
+}
+
+model QuestionAttempt {
+  id            String       @id @default(cuid())
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  question      QuestionBank  @relation(fields: [questionId], references: [id])
+  questionId    String
+  selectedOption String?
+  isCorrect     Boolean
+  timeSpent     Int?         // Time in seconds
+  createdAt     DateTime     @default(now())
+
+  @@index([userId])
+  @@index([questionId])
+  @@index([userId, createdAt])
+}
+
+// User Segmentation
+model UserSegment {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  criteria    Json     // Criteria for segment (e.g., subscriptionStatus, exam type, etc.)
+  userCount   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  memberships UserSegmentMembership[]
+
+  @@index([name])
+}
+
+// Enhanced User model for segmentation
+model UserSegmentMembership {
+  id          String   @id @default(cuid())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  segment     UserSegment @relation(fields: [segmentId], references: [id], onDelete: Cascade)
+  segmentId   String
+  createdAt   DateTime @default(now())
+
+  @@unique([userId, segmentId])
+  @@index([userId])
+  @@index([segmentId])
 }
 
