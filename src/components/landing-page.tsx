@@ -386,17 +386,17 @@ export async function LandingPage() {
           </div>
           <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {/* FREE PLAN */}
-            <Card className="border border-borderSubtle shadow-sm relative">
-              <CardHeader className="pb-6">
-                <div className="flex items-center justify-between mb-2">
-                  <CardTitle className="text-heading-h3 text-text-primary">Free Plan</CardTitle>
-                  <span className="text-label-xs bg-primary-teal-light text-primary-teal px-2 py-1 rounded-full">
+            <Card className="border border-borderSubtle shadow-sm relative bg-bg-card">
+              <CardHeader className="pb-6 relative">
+                <div className="absolute top-0 right-0">
+                  <span className="bg-state-success text-white text-label-xs px-2 py-1 rounded-full font-medium">
                     Always Free
                   </span>
                 </div>
+                <CardTitle className="text-heading-h3 text-text-primary mb-6">Free Plan</CardTitle>
                 <div className="mt-6">
                   <span className="text-display-h2 text-text-primary">₹0</span>
-                  <span className="text-body-m text-text-secondary">/forever</span>
+                  <span className="text-body-m text-text-secondary ml-1">/forever</span>
                 </div>
                 <p className="text-body-s text-text-secondary mt-3">
                   Perfect for first-time users and casual learners
@@ -426,7 +426,7 @@ export async function LandingPage() {
                   </li>
                 </ul>
                 <Link href="/auth/register" className="block">
-                  <Button className="w-full border border-borderSubtle bg-bg-card text-text-primary hover:bg-bg-canvas">
+                  <Button className="w-full bg-white text-text-primary hover:bg-bg-canvas border border-borderSubtle">
                     Get Started Free
                   </Button>
                 </Link>
@@ -434,18 +434,18 @@ export async function LandingPage() {
             </Card>
 
             {/* STUDENT PRO PLAN */}
-            <Card className="border-2 border-primary-teal shadow-lg relative scale-105">
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+            <Card className="border-2 border-primary-teal shadow-lg relative bg-bg-card z-10 scale-105">
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20">
                 <span className="bg-primary-teal text-white text-label-xs px-4 py-1 rounded-full font-medium">
                   Most Popular
                 </span>
               </div>
-              <CardHeader className="pb-6">
-                <CardTitle className="text-heading-h3 text-text-primary">Student Pro</CardTitle>
+              <CardHeader className="pb-6 pt-8">
+                <CardTitle className="text-heading-h3 text-text-primary mb-6">Student Pro</CardTitle>
                 <div className="mt-6 space-y-2">
                   <div>
                     <span className="text-display-h2 text-text-primary">₹199</span>
-                    <span className="text-body-m text-text-secondary">/month</span>
+                    <span className="text-body-m text-text-secondary ml-1">/month</span>
                   </div>
                   <div className="text-body-s text-text-secondary space-y-1">
                     <div>or ₹499 / 3 months</div>
@@ -500,18 +500,18 @@ export async function LandingPage() {
             </Card>
 
             {/* TOPPER PLAN */}
-            <Card className="border border-borderSubtle shadow-sm relative">
-              <div className="absolute -top-4 right-4">
-                <span className="bg-gradient-to-r from-primary-teal to-primary-teal/80 text-white text-label-xs px-3 py-1 rounded-full font-medium">
+            <Card className="border border-borderSubtle shadow-sm relative bg-bg-card">
+              <div className="absolute top-0 right-0">
+                <span className="bg-primary-teal text-white text-label-xs px-3 py-1 rounded-full font-medium">
                   Advanced AI
                 </span>
               </div>
               <CardHeader className="pb-6">
-                <CardTitle className="text-heading-h3 text-text-primary">Topper Plan</CardTitle>
+                <CardTitle className="text-heading-h3 text-text-primary mb-6">Topper Plan</CardTitle>
                 <div className="mt-6 space-y-2">
                   <div>
                     <span className="text-display-h2 text-text-primary">₹349</span>
-                    <span className="text-body-m text-text-secondary">/month</span>
+                    <span className="text-body-m text-text-secondary ml-1">/month</span>
                   </div>
                   <div className="text-body-s text-text-secondary space-y-1">
                     <div>or ₹899 / 3 months</div>
@@ -523,7 +523,7 @@ export async function LandingPage() {
                 </p>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="bg-primary-teal-light/30 rounded-lg p-3 mb-4">
+                <div className="bg-primary-teal-light/30 rounded-lg p-3 -mt-2 mb-2">
                   <p className="text-body-s text-primary-teal font-medium">Everything in Pro +</p>
                 </div>
                 <ul className="space-y-3">
@@ -565,7 +565,7 @@ export async function LandingPage() {
                   </li>
                 </ul>
                 <Link href="/auth/register" className="block">
-                  <Button className="w-full border-2 border-primary-teal bg-bg-card text-primary-teal hover:bg-primary-teal hover:text-white transition-all">
+                  <Button className="w-full border-2 border-primary-teal bg-white text-primary-teal hover:bg-primary-teal hover:text-white transition-all">
                     Upgrade to Topper
                   </Button>
                 </Link>

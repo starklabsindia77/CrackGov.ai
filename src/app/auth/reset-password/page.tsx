@@ -79,14 +79,14 @@ export default function ResetPasswordPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-        <Card className="w-full max-w-md">
+      <div className="min-h-screen flex items-center justify-center bg-bg-canvas px-4 py-12">
+        <Card className="w-full max-w-md border border-borderSubtle bg-bg-card shadow-lg">
           <CardContent className="pt-6">
             <div className="text-center space-y-4">
-              <div className="text-green-600 font-semibold">
+              <div className="text-state-success font-semibold text-body-m">
                 Password reset successfully!
               </div>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-body-s text-text-secondary">
                 Redirecting to login page...
               </p>
             </div>
@@ -97,18 +97,18 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-bg-canvas px-4 py-12">
+      <Card className="w-full max-w-md border border-borderSubtle bg-bg-card shadow-lg">
         <CardHeader>
-          <CardTitle className="text-2xl">Reset Password</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-display-h2 text-text-primary">Reset Password</CardTitle>
+          <CardDescription className="text-body-m text-text-secondary">
             Enter your new password
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="password">New Password</Label>
+              <Label htmlFor="password" className="text-body-m text-text-primary">New Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -116,10 +116,11 @@ export default function ResetPasswordPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
+                className="border-borderSubtle focus:border-primary-teal"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Label htmlFor="confirmPassword" className="text-body-m text-text-primary">Confirm Password</Label>
               <Input
                 id="confirmPassword"
                 type="password"
@@ -127,17 +128,22 @@ export default function ResetPasswordPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 minLength={6}
+                className="border-borderSubtle focus:border-primary-teal"
               />
             </div>
             {error && (
-              <div className="text-sm text-destructive">{error}</div>
+              <div className="text-body-s text-state-error">{error}</div>
             )}
-            <Button type="submit" className="w-full" disabled={loading || !token}>
+            <Button 
+              type="submit" 
+              className="w-full bg-primary-teal hover:bg-primary-teal/90 text-white" 
+              disabled={loading || !token}
+            >
               {loading ? "Resetting..." : "Reset Password"}
             </Button>
           </form>
-          <div className="mt-4 text-center text-sm">
-            <Link href="/auth/login" className="text-primary hover:underline">
+          <div className="mt-6 text-center">
+            <Link href="/auth/login" className="text-body-s text-primary-teal hover:underline">
               Back to Login
             </Link>
           </div>

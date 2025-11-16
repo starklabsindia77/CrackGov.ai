@@ -50,18 +50,18 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-bg-canvas px-4 py-12">
+      <Card className="w-full max-w-md border border-borderSubtle bg-bg-card shadow-lg">
         <CardHeader>
-          <CardTitle className="text-2xl">Register</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-display-h2 text-text-primary">Register</CardTitle>
+          <CardDescription className="text-body-m text-text-secondary">
             Create an account to get started
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="name" className="text-body-m text-text-primary">Name</Label>
               <Input
                 id="name"
                 type="text"
@@ -69,10 +69,11 @@ export default function RegisterPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
+                className="border-borderSubtle focus:border-primary-teal"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-body-m text-text-primary">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -80,10 +81,11 @@ export default function RegisterPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                className="border-borderSubtle focus:border-primary-teal"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-body-m text-text-primary">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -91,20 +93,27 @@ export default function RegisterPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
+                className="border-borderSubtle focus:border-primary-teal"
               />
             </div>
             {error && (
-              <div className="text-sm text-destructive">{error}</div>
+              <div className="text-body-s text-state-error">{error}</div>
             )}
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button 
+              type="submit" 
+              className="w-full bg-primary-teal hover:bg-primary-teal/90 text-white" 
+              disabled={loading}
+            >
               {loading ? "Creating account..." : "Register"}
             </Button>
           </form>
-          <div className="mt-4 text-center text-sm">
-            Already have an account?{" "}
-            <Link href="/auth/login" className="text-primary hover:underline">
-              Login
-            </Link>
+          <div className="mt-6 text-center">
+            <div className="text-body-s text-text-secondary">
+              Already have an account?{" "}
+              <Link href="/auth/login" className="text-primary-teal hover:underline font-medium">
+                Login
+              </Link>
+            </div>
           </div>
         </CardContent>
       </Card>

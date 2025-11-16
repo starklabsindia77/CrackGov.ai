@@ -48,18 +48,18 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-bg-canvas px-4 py-12">
+      <Card className="w-full max-w-md border border-borderSubtle bg-bg-card shadow-lg">
         <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-display-h2 text-text-primary">Login</CardTitle>
+          <CardDescription className="text-body-m text-text-secondary">
             Enter your credentials to access your account
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-body-m text-text-primary">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -67,34 +67,40 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                className="border-borderSubtle focus:border-primary-teal"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-body-m text-text-primary">Password</Label>
               <Input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                className="border-borderSubtle focus:border-primary-teal"
               />
             </div>
             {error && (
-              <div className="text-sm text-destructive">{error}</div>
+              <div className="text-body-s text-state-error">{error}</div>
             )}
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button 
+              type="submit" 
+              className="w-full bg-primary-teal hover:bg-primary-teal/90 text-white" 
+              disabled={loading}
+            >
               {loading ? "Logging in..." : "Login"}
             </Button>
           </form>
-          <div className="mt-4 space-y-2 text-center text-sm">
-            <div>
+          <div className="mt-6 space-y-2 text-center">
+            <div className="text-body-s text-text-secondary">
               Don't have an account?{" "}
-              <Link href="/auth/register" className="text-primary hover:underline">
+              <Link href="/auth/register" className="text-primary-teal hover:underline font-medium">
                 Register
               </Link>
             </div>
             <div>
-              <Link href="/auth/forgot-password" className="text-primary hover:underline">
+              <Link href="/auth/forgot-password" className="text-body-s text-primary-teal hover:underline">
                 Forgot your password?
               </Link>
             </div>

@@ -49,18 +49,18 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-bg-canvas px-4 py-12">
+      <Card className="w-full max-w-md border border-borderSubtle bg-bg-card shadow-lg">
         <CardHeader>
-          <CardTitle className="text-2xl">Forgot Password</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-display-h2 text-text-primary">Forgot Password</CardTitle>
+          <CardDescription className="text-body-m text-text-secondary">
             Enter your email to receive a password reset link
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-body-m text-text-primary">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -68,20 +68,25 @@ export default function ForgotPasswordPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                className="border-borderSubtle focus:border-primary-teal"
               />
             </div>
             {error && (
-              <div className="text-sm text-destructive">{error}</div>
+              <div className="text-body-s text-state-error">{error}</div>
             )}
             {message && (
-              <div className="text-sm text-green-600">{message}</div>
+              <div className="text-body-s text-state-success">{message}</div>
             )}
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button 
+              type="submit" 
+              className="w-full bg-primary-teal hover:bg-primary-teal/90 text-white" 
+              disabled={loading}
+            >
               {loading ? "Sending..." : "Send Reset Link"}
             </Button>
           </form>
-          <div className="mt-4 text-center text-sm">
-            <Link href="/auth/login" className="text-primary hover:underline">
+          <div className="mt-6 text-center">
+            <Link href="/auth/login" className="text-body-s text-primary-teal hover:underline">
               Back to Login
             </Link>
           </div>

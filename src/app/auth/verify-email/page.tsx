@@ -58,11 +58,11 @@ export default function VerifyEmailPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-bg-canvas px-4 py-12">
+      <Card className="w-full max-w-md border border-borderSubtle bg-bg-card shadow-lg">
         <CardHeader>
-          <CardTitle className="text-2xl">Email Verification</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-display-h2 text-text-primary">Email Verification</CardTitle>
+          <CardDescription className="text-body-m text-text-secondary">
             Verifying your email address
           </CardDescription>
         </CardHeader>
@@ -70,26 +70,28 @@ export default function VerifyEmailPage() {
           <div className="text-center space-y-4">
             {status === "loading" && (
               <>
-                <Loader2 className="h-12 w-12 animate-spin mx-auto text-primary" />
-                <p className="text-muted-foreground">Verifying your email...</p>
+                <Loader2 className="h-12 w-12 animate-spin mx-auto text-primary-teal" />
+                <p className="text-body-m text-text-secondary">Verifying your email...</p>
               </>
             )}
             {status === "success" && (
               <>
-                <CheckCircle className="h-12 w-12 mx-auto text-green-600" />
-                <p className="text-green-600 font-semibold">{message}</p>
-                <p className="text-sm text-muted-foreground">
+                <CheckCircle className="h-12 w-12 mx-auto text-state-success" />
+                <p className="text-state-success font-semibold text-body-m">{message}</p>
+                <p className="text-body-s text-text-secondary">
                   Redirecting to login page...
                 </p>
               </>
             )}
             {status === "error" && (
               <>
-                <XCircle className="h-12 w-12 mx-auto text-destructive" />
-                <p className="text-destructive font-semibold">{message}</p>
+                <XCircle className="h-12 w-12 mx-auto text-state-error" />
+                <p className="text-state-error font-semibold text-body-m">{message}</p>
                 <div className="pt-4">
                   <Link href="/auth/login">
-                    <Button>Go to Login</Button>
+                    <Button className="bg-primary-teal hover:bg-primary-teal/90 text-white">
+                      Go to Login
+                    </Button>
                   </Link>
                 </div>
               </>
