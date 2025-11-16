@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
+import { sendTestResultEmail } from "@/lib/email";
 import { z } from "zod";
 
 const submitTestSchema = z.object({
@@ -82,7 +83,7 @@ export async function POST(
       .map(([topic]) => topic);
 
     // Save attempt
-    await prisma.testAttempt.create({
+    const attempt = await prisma.testAttempt.create({
       data: {
         testId: test.id,
         userId: session.user.id,
@@ -94,6 +95,24 @@ export async function POST(
           topicBreakdown,
         },
       },
+      include: {
+        user: {
+          select: {
+            email: true,
+          },
+        },
+      },
+    });
+
+    // Send test result email notification (async, don't wait)
+    sendTestResultEmail(attempt.user.email, {
+      exam: test.exam,
+      score,
+      total,
+      accuracy,
+      weakTopics,
+    }).catch((error) => {
+      console.error("Error sending test result email:", error);
     });
 
     return NextResponse.json({

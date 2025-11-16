@@ -9,8 +9,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Printer, Download } from "lucide-react";
+import { Printer, Download, Share2 } from "lucide-react";
 import { exportTestResultToPDF } from "@/lib/pdf-export";
+import { shareContent, generateTestResultShareText } from "@/lib/share-utils";
 
 interface Question {
   id: string;
@@ -133,20 +134,40 @@ export default function TakeTestPage() {
     });
   };
 
+  const handleShare = async () => {
+    if (!test || !results) return;
+    const shareText = generateTestResultShareText(
+      test.exam,
+      results.score,
+      results.total,
+      results.accuracy
+    );
+    await shareContent({
+      title: `${test.exam} Test Results`,
+      description: shareText,
+      url: window.location.href,
+    });
+  };
+
   if (results) {
     return (
       <AppLayout>
-        <div className="print:hidden mb-4 flex gap-2">
-          <Button onClick={handlePrint} variant="outline">
-            <Printer className="h-4 w-4 mr-2" />
-            Print
-          </Button>
-          <Button onClick={handleExportPDF} variant="outline">
-            <Download className="h-4 w-4 mr-2" />
-            Export PDF
-          </Button>
-        </div>
-        <Card className="print:shadow-none print:border-0">
+        <div className="space-y-6">
+          <div className="print:hidden mb-4 flex gap-2">
+            <Button onClick={handlePrint} variant="outline">
+              <Printer className="h-4 w-4 mr-2" />
+              Print
+            </Button>
+            <Button onClick={handleExportPDF} variant="outline">
+              <Download className="h-4 w-4 mr-2" />
+              Export PDF
+            </Button>
+            <Button onClick={handleShare} variant="outline">
+              <Share2 className="h-4 w-4 mr-2" />
+              Share
+            </Button>
+          </div>
+          <Card className="print:shadow-none print:border-0">
           <CardHeader>
             <CardTitle>Test Results</CardTitle>
           </CardHeader>

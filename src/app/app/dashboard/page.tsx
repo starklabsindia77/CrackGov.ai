@@ -22,11 +22,11 @@ export default async function DashboardPage() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-3">
-          <Card className="hover:shadow-lg transition-shadow">
+          <Card className="hover:shadow-lg transition-shadow" data-onboarding="study-plan">
             <CardHeader>
               <div className="flex items-center space-x-2">
                 <BookOpen className="h-5 w-5 text-primary" />
-                <CardTitle>Today's Plan</CardTitle>
+                <CardTitle>Study Plan</CardTitle>
               </div>
               <CardDescription>
                 Get your personalized AI study plan
@@ -39,7 +39,7 @@ export default async function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow">
+          <Card className="hover:shadow-lg transition-shadow" data-onboarding="mock-tests">
             <CardHeader>
               <div className="flex items-center space-x-2">
                 <FileQuestion className="h-5 w-5 text-primary" />
@@ -56,7 +56,7 @@ export default async function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow">
+          <Card className="hover:shadow-lg transition-shadow" data-onboarding="doubts">
             <CardHeader>
               <div className="flex items-center space-x-2">
                 <MessageCircle className="h-5 w-5 text-primary" />
@@ -74,7 +74,7 @@ export default async function DashboardPage() {
           </Card>
         </div>
 
-        <Card>
+        <Card data-onboarding="test-history">
           <CardHeader>
             <div className="flex items-center space-x-2">
               <History className="h-5 w-5 text-primary" />

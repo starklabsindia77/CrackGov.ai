@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { authRateLimiter } from "@/lib/rate-limit";
-import { sendVerificationEmail } from "@/lib/email";
+import { sendVerificationEmail, sendWelcomeEmail } from "@/lib/email";
 import crypto from "crypto";
 import { z } from "zod";
 
@@ -57,6 +57,9 @@ export async function POST(request: NextRequest) {
 
     // Send verification email
     await sendVerificationEmail(email, verificationToken);
+    
+    // Send welcome email
+    await sendWelcomeEmail(email, name);
 
     return NextResponse.json(
       { 

@@ -1,35 +1,117 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, CreditCard, Shield, Zap, Headphones } from "lucide-react";
 import { toast } from "sonner";
 
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
+
 export default function UpgradePage() {
   const router = useRouter();
+  const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    // Load Razorpay script
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
   const handleUpgrade = async () => {
     setError("");
     setLoading(true);
 
     try {
-      const response = await fetch("/api/subscription/upgrade", {
+      // Create Razorpay order
+      const orderResponse = await fetch("/api/subscription/create-order", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: 99900, currency: "INR" }),
       });
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "Failed to upgrade");
+      if (!orderResponse.ok) {
+        const data = await orderResponse.json();
+        // If Razorpay not configured, fallback to stub
+        if (data.error?.includes("RAZORPAY") || !data.orderId) {
+          const stubResponse = await fetch("/api/subscription/upgrade", {
+            method: "POST",
+          });
+          if (stubResponse.ok) {
+            toast.success("Successfully upgraded to Pro! (Demo Mode)");
+            router.push("/app/dashboard");
+            router.refresh();
+            return;
+          }
+        }
+        throw new Error(data.error || "Failed to create order");
       }
 
-      toast.success("Successfully upgraded to Pro! Welcome to premium features.");
-      router.push("/app/dashboard");
-      router.refresh();
+      const orderData = await orderResponse.json();
+
+      // Initialize Razorpay checkout
+      if (window.Razorpay) {
+        const options = {
+          key: orderData.keyId,
+          amount: orderData.amount,
+          currency: orderData.currency,
+          name: "CrackGov.ai",
+          description: "Pro Subscription",
+          order_id: orderData.orderId,
+          handler: async function (response: any) {
+            // Verify payment
+            const verifyResponse = await fetch("/api/subscription/verify-payment", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              }),
+            });
+
+            if (verifyResponse.ok) {
+              toast.success("Payment successful! Welcome to Pro!");
+              router.push("/app/dashboard");
+              router.refresh();
+            } else {
+              const data = await verifyResponse.json();
+              toast.error(data.error || "Payment verification failed");
+            }
+          },
+          prefill: {
+            email: session?.user?.email || "",
+            name: session?.user?.name || "",
+          },
+          theme: {
+            color: "#3b82f6",
+          },
+        };
+
+        const razorpay = new window.Razorpay(options);
+        razorpay.on("payment.failed", function (response: any) {
+          toast.error(`Payment failed: ${response.error.description}`);
+          setLoading(false);
+        });
+        razorpay.open();
+      } else {
+        throw new Error("Razorpay SDK not loaded");
+      }
     } catch (err: any) {
       const errorMsg = err.message || "Something went wrong";
       setError(errorMsg);

@@ -10,17 +10,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // TODO: In production, integrate with Razorpay or similar payment gateway
-    // For MVP, we just update the subscription status directly
+    // Check if Razorpay is configured
+    if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+      // Fallback to stub if Razorpay not configured
+      const user = await prisma.user.update({
+        where: { id: session.user.id },
+        data: { subscriptionStatus: "pro" },
+      });
 
-    const user = await prisma.user.update({
-      where: { id: session.user.id },
-      data: { subscriptionStatus: "pro" },
-    });
+      return NextResponse.json({
+        message: "Subscription upgraded successfully (demo mode - Razorpay not configured)",
+        subscriptionStatus: user.subscriptionStatus,
+      });
+    }
 
+    // If Razorpay is configured, redirect to payment flow
     return NextResponse.json({
-      message: "Subscription upgraded successfully",
-      subscriptionStatus: user.subscriptionStatus,
+      message: "Please use the payment flow",
+      requiresPayment: true,
     });
   } catch (error) {
     console.error("Subscription upgrade error:", error);

@@ -11,6 +11,9 @@ import {
   Activity,
   LayoutDashboard,
   LogOut,
+  FileText,
+  BarChart3,
+  Users,
 } from "lucide-react";
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -19,9 +22,12 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
 
   const navItems = [
     { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
+    { href: "/admin/users", label: "Users", icon: Users },
     { href: "/admin/providers", label: "AI Providers", icon: Zap },
     { href: "/admin/features", label: "Features", icon: Settings },
     { href: "/admin/health", label: "Health", icon: Activity },
+    { href: "/admin/cms", label: "CMS", icon: FileText },
   ];
 
   return (

@@ -1,4 +1,5 @@
 import { requireAuth } from "@/lib/auth";
+import { AppLayout as AppLayoutComponent } from "@/components/layout/app-layout";
 
 export default async function AppLayout({
   children,
@@ -6,6 +7,6 @@ export default async function AppLayout({
   children: React.ReactNode;
 }) {
   await requireAuth();
-  return <>{children}</>;
+  return <AppLayoutComponent>{children}</AppLayoutComponent>;
 }
 

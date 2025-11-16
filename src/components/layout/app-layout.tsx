@@ -5,10 +5,39 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { OnboardingTour } from "@/components/onboarding/onboarding-tour";
+import { NotificationBell } from "@/components/notifications/notification-bell";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { useState, useEffect } from "react";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession();
   const pathname = usePathname();
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  useEffect(() => {
+    if (session?.user && pathname === "/app/dashboard") {
+      checkOnboardingStatus();
+    }
+  }, [session, pathname]);
+
+  const checkOnboardingStatus = async () => {
+    try {
+      const response = await fetch("/api/user/onboarding-status");
+      if (response.ok) {
+        const data = await response.json();
+        if (!data.onboardingCompleted) {
+          setShowOnboarding(true);
+        }
+      }
+    } catch (error) {
+      console.error("Error checking onboarding status:", error);
+    }
+  };
+
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+  };
 
   const navItems = [
     { href: "/app/dashboard", label: "Dashboard" },
@@ -16,6 +45,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     { href: "/app/tests", label: "Mock Tests" },
     { href: "/app/test-history", label: "Test History" },
     { href: "/app/doubts", label: "Ask Doubts" },
+    { href: "/faq", label: "Help" },
   ];
 
   return (
@@ -47,6 +77,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
             <div className="flex items-center space-x-4">
               <ThemeToggle />
+              <NotificationBell />
               <Link href="/app/profile">
                 <span className="text-sm text-gray-700 dark:text-gray-300 hover:text-primary cursor-pointer">
                   {session?.user?.name || session?.user?.email}
@@ -68,6 +99,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       </nav>
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {children}
+        {showOnboarding && (
+          <OnboardingTour onComplete={handleOnboardingComplete} />
+        )}
       </main>
     </div>
   );

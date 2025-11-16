@@ -12,7 +12,9 @@ An MVP SaaS web application for AI-powered government exam preparation built wit
 - 💬 **AI Doubt Chat**: Ask questions and get step-by-step explanations from an AI tutor
 - 📊 **Dashboard**: Overview of study progress and quick access to all features
 - 💳 **Subscription**: Stubbed subscription system (ready for Razorpay integration)
-- 🛠️ **Admin Panel**: Comprehensive admin system for managing AI providers, API keys, and feature configurations
+- 🛠️ **Admin Panel**: Comprehensive admin system for managing AI providers, API keys, feature configurations, and CMS content
+- 📝 **CMS**: Content Management System for managing pages, FAQs, announcements, and banners
+- 💳 **Razorpay Integration**: Complete payment gateway integration for subscriptions
 - 🔄 **AI Orchestrator**: Central AI service with automatic failover, key rotation, and health tracking
 - 🛡️ **Rate Limiting**: API rate limiting to prevent abuse
 - 📝 **Structured Logging**: Comprehensive error logging and monitoring
@@ -175,6 +177,8 @@ src/
 | `NEXTAUTH_SECRET` | Secret key for NextAuth.js |
 | `ENCRYPTION_KEY` | 32-byte key for encrypting API keys at rest |
 | `OPENAI_API_KEY` | OpenAI API key (legacy, now managed via admin panel) |
+| `RAZORPAY_KEY_ID` | Razorpay API key ID (for payment integration) |
+| `RAZORPAY_KEY_SECRET` | Razorpay API key secret (for payment integration) |
 
 ## Development
 
