@@ -1,0 +1,111 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String   @id @default(cuid())
+  email             String   @unique
+  passwordHash      String
+  name              String?
+  role              String   @default("user") // "user" | "admin"
+  subscriptionStatus String  @default("free") // "free" | "pro"
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  tests      Test[]
+  attempts   TestAttempt[]
+}
+
+model Test {
+  id        String          @id @default(cuid())
+  user      User            @relation(fields: [userId], references: [id])
+  userId    String
+  exam      String
+  createdAt DateTime        @default(now())
+
+  questions TestQuestion[]
+  attempts  TestAttempt[]
+}
+
+model TestQuestion {
+  id            String   @id @default(cuid())
+  test          Test     @relation(fields: [testId], references: [id], onDelete: Cascade)
+  testId        String
+  question      String
+  options       Json     // array of strings
+  correctOption String
+  explanation   String?
+  topic         String?
+
+  @@index([testId])
+}
+
+model TestAttempt {
+  id         String   @id @default(cuid())
+  test       Test     @relation(fields: [testId], references: [id])
+  testId     String
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  score      Int
+  total      Int
+  accuracy   Float
+  details    Json     // per-question result, maybe topic breakdown
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([testId])
+}
+
+model AiProvider {
+  id           String   @id @default(cuid())
+  name         String
+  code         String   @unique // e.g. "OPENAI", "GEMINI", "CLAUDE"
+  status       String   @default("active") // "active" | "inactive"
+  defaultModel String?
+  config       Json?    // base URL, timeouts, etc.
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  keys     AiProviderKey[]
+  primaryFeatures   AiFeatureConfig[] @relation("PrimaryProvider")
+  secondaryFeatures AiFeatureConfig[] @relation("SecondaryProvider")
+}
+
+model AiProviderKey {
+  id           String     @id @default(cuid())
+  provider     AiProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  providerId   String
+  label        String?
+  apiKeyEnc    String      // encrypted key
+  status       String      @default("healthy") // "healthy" | "failing" | "disabled"
+  priority     Int         @default(0) // 0-9, lower is higher priority
+  lastUsedAt   DateTime?
+  lastErrorAt  DateTime?
+  failureCount Int         @default(0)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([providerId])
+  @@index([providerId, status])
+}
+
+model AiFeatureConfig {
+  id            String      @id @default(cuid())
+  featureCode   String      @unique // e.g. "STUDY_PLAN", "MOCK_TEST", "DOUBT_CHAT"
+  primaryProvider   AiProvider? @relation("PrimaryProvider", fields: [primaryProviderId], references: [id])
+  primaryProviderId String?
+  secondaryProvider AiProvider? @relation("SecondaryProvider", fields: [secondaryProviderId], references: [id])
+  secondaryProviderId String?
+  settings      Json?       // per-feature config: maxTokens, temperature, etc.
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
