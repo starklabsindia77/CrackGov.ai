@@ -17,11 +17,15 @@ model User {
   name              String?
   role              String   @default("user") // "user" | "admin"
   subscriptionStatus String  @default("free") // "free" | "pro"
+  emailVerified     Boolean  @default(false)
   createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  updatedAt        DateTime @updatedAt
 
-  tests      Test[]
-  attempts   TestAttempt[]
+  tests         Test[]
+  attempts      TestAttempt[]
+  studyPlans    StudyPlan[]
+  passwordResetTokens PasswordResetToken[]
+  emailVerificationTokens EmailVerificationToken[]
 }
 
 model Test {
@@ -107,5 +111,46 @@ model AiFeatureConfig {
   settings      Json?       // per-feature config: maxTokens, temperature, etc.
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+}
+
+model StudyPlan {
+  id          String   @id @default(cuid())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  exam        String
+  targetDate  String
+  hoursPerDay Int
+  weakTopics  String[] // array of weak topics
+  planData    Json     // the full study plan structure
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([userId, createdAt])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([userId])
+}
+
+model EmailVerificationToken {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([userId])
 }
 

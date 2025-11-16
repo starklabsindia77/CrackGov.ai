@@ -7,6 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Printer, Download } from "lucide-react";
+import { exportTestResultToPDF } from "@/lib/pdf-export";
 
 interface Question {
   id: string;
@@ -74,8 +78,11 @@ export default function TakeTestPage() {
 
       const data = await response.json();
       setResults(data);
+      toast.success(`Test submitted! Score: ${data.score}/${data.total} (${data.accuracy.toFixed(1)}%)`);
     } catch (err: any) {
-      setError(err.message);
+      const errorMsg = err.message || "Failed to submit test";
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setSubmitting(false);
     }
@@ -84,7 +91,19 @@ export default function TakeTestPage() {
   if (loading) {
     return (
       <AppLayout>
-        <div className="text-center py-12">Loading test...</div>
+        <div className="space-y-6">
+          <Skeleton className="h-9 w-64" />
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-48" />
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Skeleton className="h-6 w-full" />
+              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-10 w-32" />
+            </CardContent>
+          </Card>
+        </div>
       </AppLayout>
     );
   }
@@ -97,10 +116,37 @@ export default function TakeTestPage() {
     );
   }
 
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleExportPDF = () => {
+    if (!test || !results) return;
+    exportTestResultToPDF({
+      score: results.score,
+      total: results.total,
+      accuracy: results.accuracy,
+      exam: test.exam,
+      createdAt: new Date().toISOString(),
+      topicBreakdown: results.topicBreakdown,
+      weakTopics: results.weakTopics,
+    });
+  };
+
   if (results) {
     return (
       <AppLayout>
-        <Card>
+        <div className="print:hidden mb-4 flex gap-2">
+          <Button onClick={handlePrint} variant="outline">
+            <Printer className="h-4 w-4 mr-2" />
+            Print
+          </Button>
+          <Button onClick={handleExportPDF} variant="outline">
+            <Download className="h-4 w-4 mr-2" />
+            Export PDF
+          </Button>
+        </div>
+        <Card className="print:shadow-none print:border-0">
           <CardHeader>
             <CardTitle>Test Results</CardTitle>
           </CardHeader>

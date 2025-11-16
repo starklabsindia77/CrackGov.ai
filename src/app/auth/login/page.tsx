@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "sonner";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -29,13 +30,18 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setError("Invalid email or password");
+        const errorMsg = "Invalid email or password";
+        setError(errorMsg);
+        toast.error(errorMsg);
       } else {
+        toast.success("Logged in successfully!");
         router.push("/app/dashboard");
         router.refresh();
       }
     } catch (err) {
-      setError("Something went wrong. Please try again.");
+      const errorMsg = "Something went wrong. Please try again.";
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -80,11 +86,18 @@ export default function LoginPage() {
               {loading ? "Logging in..." : "Login"}
             </Button>
           </form>
-          <div className="mt-4 text-center text-sm">
-            Don't have an account?{" "}
-            <Link href="/auth/register" className="text-primary hover:underline">
-              Register
-            </Link>
+          <div className="mt-4 space-y-2 text-center text-sm">
+            <div>
+              Don't have an account?{" "}
+              <Link href="/auth/register" className="text-primary hover:underline">
+                Register
+              </Link>
+            </div>
+            <div>
+              <Link href="/auth/forgot-password" className="text-primary hover:underline">
+                Forgot your password?
+              </Link>
+            </div>
           </div>
         </CardContent>
       </Card>

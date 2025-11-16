@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { authRateLimiter } from "@/lib/rate-limit";
+import { sendVerificationEmail } from "@/lib/email";
+import crypto from "crypto";
 import { z } from "zod";
 
 const registerSchema = z.object({
@@ -11,6 +14,10 @@ const registerSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting
+    const rateLimitResponse = await authRateLimiter(request);
+    if (rateLimitResponse) return rateLimitResponse;
+
     const body = await request.json();
     const { name, email, password } = registerSchema.parse(body);
 
@@ -35,8 +42,27 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Generate verification token
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 24); // 24 hours expiry
+
+    await prisma.emailVerificationToken.create({
+      data: {
+        userId: user.id,
+        token: verificationToken,
+        expiresAt,
+      },
+    });
+
+    // Send verification email
+    await sendVerificationEmail(email, verificationToken);
+
     return NextResponse.json(
-      { message: "User created successfully", userId: user.id },
+      { 
+        message: "User created successfully. Please check your email to verify your account.",
+        userId: user.id 
+      },
       { status: 201 }
     );
   } catch (error) {

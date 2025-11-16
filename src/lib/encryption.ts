@@ -1,6 +1,10 @@
 import crypto from "crypto";
 
-const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || crypto.randomBytes(32).toString("hex");
+// Use a fixed key for testing, random for production
+const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || 
+  (process.env.NODE_ENV === "test" 
+    ? "test-key-32-bytes-long-for-testing" 
+    : crypto.randomBytes(32).toString("hex"));
 const ALGORITHM = "aes-256-cbc";
 
 function getKey(): Buffer {

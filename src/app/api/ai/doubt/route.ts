@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { callAI } from "@/lib/ai-orchestrator";
+import { aiRateLimiter } from "@/lib/rate-limit";
+import { logApiError } from "@/lib/logger";
 import { z } from "zod";
 
 const doubtSchema = z.object({
@@ -11,6 +13,10 @@ const doubtSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting
+    const rateLimitResponse = await aiRateLimiter(request);
+    if (rateLimitResponse) return rateLimitResponse;
+
     const session = await getServerSession(authOptions);
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -59,7 +65,9 @@ Keep the answer concise but comprehensive (2-4 paragraphs).`;
         { status: 400 }
       );
     }
-    console.error("Doubt answering error:", error);
+    logApiError("/api/ai/doubt", error, {
+      userId: session?.user?.id,
+    });
     return NextResponse.json(
       { error: "Failed to get answer" },
       { status: 500 }

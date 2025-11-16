@@ -14,6 +14,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     { href: "/app/dashboard", label: "Dashboard" },
     { href: "/app/study-plan", label: "Study Plan" },
     { href: "/app/tests", label: "Mock Tests" },
+    { href: "/app/test-history", label: "Test History" },
     { href: "/app/doubts", label: "Ask Doubts" },
   ];
 
@@ -45,9 +46,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-700">
-                {session?.user?.name || session?.user?.email}
-              </span>
+              <ThemeToggle />
+              <Link href="/app/profile">
+                <span className="text-sm text-gray-700 dark:text-gray-300 hover:text-primary cursor-pointer">
+                  {session?.user?.name || session?.user?.email}
+                </span>
+              </Link>
               {session?.user?.subscriptionStatus === "free" && (
                 <Link href="/app/upgrade">
                   <Button variant="outline" size="sm">

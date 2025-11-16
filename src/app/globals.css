@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+@media print {
+  nav,
+  button:not(.print-keep),
+  .no-print {
+    display: none !important;
+  }
+  
+  body {
+    background: white !important;
+  }
+  
+  .print-break {
+    page-break-after: always;
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "sonner";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -31,13 +32,18 @@ export default function RegisterPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || "Registration failed");
+        const errorMsg = data.error || "Registration failed";
+        setError(errorMsg);
+        toast.error(errorMsg);
         return;
       }
 
+      toast.success("Account created successfully! Please log in.");
       router.push("/auth/login?registered=true");
     } catch (err) {
-      setError("Something went wrong. Please try again.");
+      const errorMsg = "Something went wrong. Please try again.";
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }

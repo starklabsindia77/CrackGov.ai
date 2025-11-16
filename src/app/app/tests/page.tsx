@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 const EXAM_TYPES = ["SSC", "Banking", "Railways", "UPSC", "State PSC"];
 
@@ -38,9 +39,12 @@ export default function TestsPage() {
       }
 
       const data = await response.json();
+      toast.success("Test generated successfully!");
       router.push(`/app/tests/${data.testId}`);
     } catch (err: any) {
-      setError(err.message || "Something went wrong");
+      const errorMsg = err.message || "Something went wrong";
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }

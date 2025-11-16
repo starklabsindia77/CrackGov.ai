@@ -3,7 +3,8 @@ import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { BookOpen, FileQuestion, MessageCircle } from "lucide-react";
+import { BookOpen, FileQuestion, MessageCircle, History, TrendingUp, Target } from "lucide-react";
+import { ProgressDashboard } from "@/components/progress-dashboard";
 
 export default async function DashboardPage() {
   const session = await requireAuth();
@@ -72,7 +73,28 @@ export default async function DashboardPage() {
             </CardContent>
           </Card>
         </div>
+
+        <Card>
+          <CardHeader>
+            <div className="flex items-center space-x-2">
+              <History className="h-5 w-5 text-primary" />
+              <CardTitle>Test History</CardTitle>
+            </div>
+            <CardDescription>
+              View your past test attempts and track progress
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link href="/app/test-history">
+              <Button variant="outline" className="w-full">
+                View Test History
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
       </div>
+
+      <ProgressDashboard />
     </AppLayout>
   );
 }

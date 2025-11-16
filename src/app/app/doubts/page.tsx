@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { MessageCircle, Bot, User } from "lucide-react";
+import { toast } from "sonner";
 
 const EXAM_TYPES = ["SSC", "Banking", "Railways", "UPSC", "State PSC"];
 
@@ -66,7 +67,9 @@ export default function DoubtsPage() {
 
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (err: any) {
-      setError(err.message || "Something went wrong");
+      const errorMsg = err.message || "Something went wrong";
+      setError(errorMsg);
+      toast.error(errorMsg);
       // Remove the user message if there was an error
       setMessages((prev) => prev.filter((m) => m.id !== userMessage.id));
     } finally {

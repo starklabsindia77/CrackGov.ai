@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 import { callAI } from "@/lib/ai-orchestrator";
+import { aiRateLimiter } from "@/lib/rate-limit";
+import { logApiError } from "@/lib/logger";
 import { z } from "zod";
 
 const generateTestSchema = z.object({
@@ -11,6 +13,10 @@ const generateTestSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting
+    const rateLimitResponse = await aiRateLimiter(request);
+    if (rateLimitResponse) return rateLimitResponse;
+
     const session = await getServerSession(authOptions);
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -94,7 +100,9 @@ Generate diverse questions covering different topics relevant to ${exam}.`;
         { status: 400 }
       );
     }
-    console.error("Test generation error:", error);
+    logApiError("/api/tests/generate", error, {
+      userId: session?.user?.id,
+    });
     return NextResponse.json(
       { error: "Failed to generate test" },
       { status: 500 }

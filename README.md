@@ -5,29 +5,36 @@ An MVP SaaS web application for AI-powered government exam preparation built wit
 ## Features
 
 - 🔐 **Authentication**: User registration and login with NextAuth.js
+- 🔑 **Password Reset**: Forgot password and reset functionality
 - 📚 **AI Study Plans**: Generate personalized study plans based on exam type, target date, and weak areas
+- 💾 **Study Plan Persistence**: Save and manage your study plans
 - 📝 **Mock Tests**: Take AI-generated 20-question mock tests with detailed results and topic-wise analysis
 - 💬 **AI Doubt Chat**: Ask questions and get step-by-step explanations from an AI tutor
 - 📊 **Dashboard**: Overview of study progress and quick access to all features
 - 💳 **Subscription**: Stubbed subscription system (ready for Razorpay integration)
 - 🛠️ **Admin Panel**: Comprehensive admin system for managing AI providers, API keys, and feature configurations
 - 🔄 **AI Orchestrator**: Central AI service with automatic failover, key rotation, and health tracking
+- 🛡️ **Rate Limiting**: API rate limiting to prevent abuse
+- 📝 **Structured Logging**: Comprehensive error logging and monitoring
+- ✅ **Test Suite**: Basic test coverage with Vitest
 
 ## Tech Stack
 
 - **Framework**: Next.js 14 (App Router)
-- **Language**: TypeScript**
+- **Language**: TypeScript
 - **Styling**: Tailwind CSS + shadcn/ui components
 - **Database**: PostgreSQL with Prisma ORM
 - **Authentication**: NextAuth.js (Credentials provider)
-- **AI**: OpenAI GPT-4o-mini
+- **AI**: OpenAI GPT-4o-mini (via AI Orchestrator)
 - **Data Fetching**: SWR
+- **Testing**: Vitest
+- **Rate Limiting**: LRU Cache based
 
 ## Prerequisites
 
 - Node.js 18+ and npm/yarn
 - PostgreSQL database
-- OpenAI API key
+- OpenAI API key (or configure via admin panel)
 
 ## Setup Instructions
 
@@ -37,7 +44,7 @@ An MVP SaaS web application for AI-powered government exam preparation built wit
    ```
 
 2. **Set up environment variables**:
-   Create a `.env` file in the root directory (see `.env.example`):
+   Create a `.env` file in the root directory:
    ```env
    DATABASE_URL="postgresql://user:password@localhost:5432/crackgov"
    NEXTAUTH_URL="http://localhost:3000"
@@ -75,26 +82,36 @@ An MVP SaaS web application for AI-powered government exam preparation built wit
 src/
 ├── app/
 │   ├── api/
-│   │   ├── auth/          # NextAuth configuration
+│   │   ├── auth/          # NextAuth configuration, password reset
 │   │   ├── ai/            # AI endpoints (study-plan, doubt)
 │   │   ├── tests/         # Mock test endpoints
-│   │   └── subscription/  # Subscription endpoints
+│   │   ├── study-plans/   # Study plan management
+│   │   ├── subscription/  # Subscription endpoints
+│   │   └── admin/         # Admin panel API routes
 │   ├── app/               # Protected app routes
 │   │   ├── dashboard/     # Dashboard page
 │   │   ├── study-plan/   # Study plan generator
 │   │   ├── tests/         # Mock test pages
 │   │   ├── doubts/        # Doubt chat
 │   │   └── upgrade/       # Subscription upgrade
-│   ├── auth/              # Auth pages (login, register)
+│   ├── auth/              # Auth pages (login, register, forgot-password, reset-password)
+│   ├── admin/             # Admin panel pages
 │   └── layout.tsx          # Root layout
 ├── components/
 │   ├── ui/                 # shadcn/ui components
 │   └── layout/              # App layout components
 ├── lib/
 │   ├── prisma.ts           # Prisma client
-│   ├── openai.ts           # OpenAI client
+│   ├── openai.ts           # OpenAI client (legacy)
+│   ├── ai-orchestrator.ts  # AI orchestrator with failover
 │   ├── auth.ts             # Auth utilities
+│   ├── admin-auth.ts       # Admin auth utilities
+│   ├── encryption.ts       # API key encryption
+│   ├── rate-limit.ts       # Rate limiting
+│   ├── logger.ts           # Structured logging
+│   ├── email.ts            # Email service (stubbed)
 │   └── utils.ts            # Utility functions
+├── test/                   # Test setup
 └── types/                   # TypeScript type definitions
 ```
 
@@ -103,10 +120,17 @@ src/
 ### Authentication
 - `POST /api/auth/register` - Register a new user
 - `POST /api/auth/[...nextauth]` - NextAuth endpoints
+- `POST /api/auth/forgot-password` - Request password reset
+- `POST /api/auth/reset-password` - Reset password with token
 
 ### AI Features
 - `POST /api/ai/study-plan` - Generate AI study plan
 - `POST /api/ai/doubt` - Get AI answer to a doubt
+
+### Study Plans
+- `GET /api/study-plans` - List user's study plans
+- `GET /api/study-plans/[id]` - Get study plan details
+- `DELETE /api/study-plans/[id]` - Delete study plan
 
 ### Mock Tests
 - `POST /api/tests/generate` - Generate a new mock test
@@ -136,6 +160,8 @@ src/
 - **Test**: Generated mock tests
 - **TestQuestion**: Questions in a test
 - **TestAttempt**: User test attempts with scores and analytics
+- **StudyPlan**: Saved study plans with full plan data
+- **PasswordResetToken**: Password reset tokens with expiration
 - **AiProvider**: AI provider configurations (OpenAI, Gemini, Claude, etc.)
 - **AiProviderKey**: Encrypted API keys for providers (up to 10 per provider)
 - **AiFeatureConfig**: Feature-level AI provider configuration with primary/secondary failover
@@ -155,6 +181,42 @@ src/
 - **Database Studio**: `npm run db:studio` (opens Prisma Studio)
 - **Database Push**: `npm run db:push` (sync schema to database)
 - **Generate Prisma Client**: `npm run db:generate`
+- **Run Tests**: `npm test`
+- **Run Tests with UI**: `npm run test:ui`
+- **Test Coverage**: `npm run test:coverage`
+
+## Rate Limiting
+
+The application includes rate limiting to prevent abuse:
+
+- **Auth endpoints**: 5 requests per minute
+- **AI endpoints**: 20 requests per minute
+- **General API**: 10 requests per minute
+
+Rate limits are based on IP address and use in-memory LRU cache. For production, consider using Redis-based rate limiting.
+
+## Testing
+
+The project includes a basic test suite using Vitest:
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm test -- --watch
+
+# Run tests with UI
+npm run test:ui
+
+# Generate coverage report
+npm run test:coverage
+```
+
+Current test coverage includes:
+- Rate limiting functionality
+- Encryption/decryption utilities
+- API route validation
 
 ## Production Deployment
 
@@ -186,6 +248,14 @@ The admin panel provides comprehensive management of AI providers and configurat
    - Key rotation: Tries keys in priority order, marks failures
    - Health tracking: Monitors key status and error rates
 
+## Recent Updates (High Priority MVP Blockers)
+
+✅ **Study Plan Persistence**: Study plans are now saved to the database and can be viewed/managed
+✅ **Password Reset**: Complete forgot password and reset password flow
+✅ **Rate Limiting**: API rate limiting implemented to prevent abuse
+✅ **Error Logging**: Structured logging system for better error tracking
+✅ **Test Suite**: Basic test coverage with Vitest
+
 ## Payment Integration (TODO)
 
 The subscription upgrade is currently stubbed. To integrate real payments:
@@ -199,4 +269,3 @@ The subscription upgrade is currently stubbed. To integrate real payments:
 ## License
 
 MIT
-
