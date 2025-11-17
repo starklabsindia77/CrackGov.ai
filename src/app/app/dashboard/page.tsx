@@ -1,5 +1,4 @@
 import { requireAuth } from "@/lib/auth";
-import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -10,7 +9,7 @@ export default async function DashboardPage() {
   const session = await requireAuth();
 
   return (
-    <AppLayout>
+    <>
       <div className="space-y-6">
         <div>
           <h1 className="text-display-h1 text-text-primary">
@@ -129,7 +128,7 @@ export default async function DashboardPage() {
       </div>
 
       <ProgressDashboard />
-    </AppLayout>
+    </>
   );
 }
 

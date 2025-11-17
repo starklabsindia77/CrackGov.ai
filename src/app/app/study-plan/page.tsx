@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -142,8 +141,7 @@ export default function StudyPlanPage() {
   };
 
   return (
-    <AppLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">AI Study Plan</h1>
           <p className="mt-2 text-gray-600">
@@ -339,8 +337,7 @@ export default function StudyPlanPage() {
             ))}
           </div>
         )}
-      </div>
-    </AppLayout>
+    </div>
   );
 }
 

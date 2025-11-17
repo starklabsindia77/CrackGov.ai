@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -61,19 +60,11 @@ export default function TestHistoryPage() {
   };
 
   if (loading) {
-    return (
-      <AppLayout>
-        <TestHistorySkeleton />
-      </AppLayout>
-    );
+    return <TestHistorySkeleton />;
   }
 
   if (error) {
-    return (
-      <AppLayout>
-        <div className="text-center py-12 text-destructive">{error}</div>
-      </AppLayout>
-    );
+    return <div className="text-center py-12 text-destructive">{error}</div>;
   }
 
   // Filter attempts
@@ -109,8 +100,7 @@ export default function TestHistoryPage() {
   };
 
   return (
-    <AppLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Test History</h1>
@@ -291,8 +281,7 @@ export default function TestHistoryPage() {
             ))}
           </div>
         )}
-      </div>
-    </AppLayout>
+    </div>
   );
 }
 

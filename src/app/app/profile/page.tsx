@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -108,8 +107,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <AppLayout>
-      <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6 max-w-2xl">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Profile Settings</h1>
           <p className="mt-2 text-gray-600">
@@ -220,8 +218,7 @@ export default function ProfilePage() {
             </form>
           </CardContent>
         </Card>
-      </div>
-    </AppLayout>
+    </div>
   );
 }
 

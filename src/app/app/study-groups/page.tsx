@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -152,8 +151,7 @@ export default function StudyGroupsPage() {
   const displayGroups = activeTab === "all" ? groups : myGroups;
 
   return (
-    <AppLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
@@ -373,8 +371,7 @@ export default function StudyGroupsPage() {
             })}
           </div>
         )}
-      </div>
-    </AppLayout>
+    </div>
   );
 }
 

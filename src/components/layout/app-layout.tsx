@@ -9,11 +9,13 @@ import { OnboardingTour } from "@/components/onboarding/onboarding-tour";
 import { NotificationBell } from "@/components/notifications/notification-bell";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useState, useEffect } from "react";
+import { Menu, X } from "lucide-react";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession();
   const pathname = usePathname();
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (session?.user && pathname === "/app/dashboard") {
@@ -54,25 +56,28 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   ];
 
   return (
-    <div className="min-h-screen bg-bg-canvas">
-      <nav className="bg-bg-card border-b border-borderSubtle sticky top-0 z-50 backdrop-blur-sm bg-bg-card/95">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex">
-              <div className="flex-shrink-0 flex items-center">
-                <Link href="/app/dashboard" className="text-display-h2 text-primary-teal font-semibold">
-                  CrackGov.ai
-                </Link>
-              </div>
-              <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+    <div className="min-h-screen bg-bg-canvas overflow-x-hidden">
+      <nav className="bg-bg-card border-b border-borderSubtle sticky top-0 z-50 backdrop-blur-sm bg-bg-card/95 shadow-sm">
+        <div className="w-full">
+          <div className="flex items-center h-16 gap-4">
+            {/* Logo */}
+            <div className="flex-shrink-0 px-4 sm:px-6">
+              <Link href="/app/dashboard" className="text-display-h2 text-primary-teal font-semibold whitespace-nowrap">
+                CrackGov.ai
+              </Link>
+            </div>
+
+            {/* Desktop Navigation - Horizontally Scrollable */}
+            <div className="hidden md:flex flex-1 items-center min-w-0">
+              <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide px-2">
                 {navItems.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-body-m font-medium transition-colors ${
+                    className={`inline-flex items-center px-3 py-2 rounded-lg text-body-s font-medium transition-colors whitespace-nowrap flex-shrink-0 ${
                       pathname === item.href
-                        ? "border-primary-teal text-text-primary"
-                        : "border-transparent text-text-secondary hover:text-text-primary hover:border-borderSubtle"
+                        ? "bg-primary-teal-light text-primary-teal"
+                        : "text-text-secondary hover:text-text-primary hover:bg-bg-canvas"
                     }`}
                   >
                     {item.label}
@@ -80,29 +85,97 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 ))}
               </div>
             </div>
-            <div className="flex items-center space-x-4">
+
+            {/* Right side actions - Always visible */}
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 px-4 sm:px-6">
               <ThemeToggle />
               <NotificationBell />
-              <Link href="/app/profile">
-                <span className="text-body-s text-text-primary hover:text-primary-teal cursor-pointer transition-colors">
+              <Link href="/app/profile" className="hidden lg:block">
+                <span className="text-body-s text-text-primary hover:text-primary-teal cursor-pointer transition-colors truncate max-w-[150px]">
                   {session?.user?.name || session?.user?.email}
                 </span>
               </Link>
               {session?.user?.subscriptionStatus === "free" && (
-                <Link href="/app/upgrade">
-                  <Button variant="outline" size="sm" className="border-primary-teal text-primary-teal hover:bg-primary-teal hover:text-white">
+                <Link href="/app/upgrade" className="hidden xl:block">
+                  <Button variant="outline" size="sm" className="border-primary-teal text-primary-teal hover:bg-primary-teal hover:text-white whitespace-nowrap">
                     Upgrade to Pro
                   </Button>
                 </Link>
               )}
-              <Button variant="ghost" size="sm" onClick={() => signOut()} className="text-text-secondary hover:text-text-primary">
-                Logout
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => signOut()} 
+                className="text-text-secondary hover:text-text-primary whitespace-nowrap"
+              >
+                <span className="hidden sm:inline">Logout</span>
+                <span className="sm:hidden">Out</span>
               </Button>
+              
+              {/* Mobile menu button */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden text-text-secondary hover:text-text-primary p-2"
+                aria-label="Toggle menu"
+              >
+                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </button>
             </div>
           </div>
+
+          {/* Mobile Navigation Menu */}
+          {mobileMenuOpen && (
+            <div className="md:hidden border-t border-borderSubtle py-4 px-4">
+              <div className="space-y-1">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`block px-4 py-2 rounded-lg text-body-m font-medium transition-colors ${
+                      pathname === item.href
+                        ? "bg-primary-teal-light text-primary-teal"
+                        : "text-text-secondary hover:text-text-primary hover:bg-bg-canvas"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+                <div className="pt-2 border-t border-borderSubtle mt-2">
+                  <Link 
+                    href="/app/profile" 
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block px-4 py-2 text-body-s text-text-primary"
+                  >
+                    Profile
+                  </Link>
+                  {session?.user?.subscriptionStatus === "free" && (
+                    <Link 
+                      href="/app/upgrade" 
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block px-4 py-2"
+                    >
+                      <Button variant="outline" size="sm" className="w-full border-primary-teal text-primary-teal hover:bg-primary-teal hover:text-white">
+                        Upgrade to Pro
+                      </Button>
+                    </Link>
+                  )}
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      signOut();
+                    }}
+                    className="w-full text-left px-4 py-2 text-body-s text-text-secondary hover:text-text-primary"
+                  >
+                    Logout
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </nav>
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 overflow-x-hidden">
         {children}
         {showOnboarding && (
           <OnboardingTour onComplete={handleOnboardingComplete} />

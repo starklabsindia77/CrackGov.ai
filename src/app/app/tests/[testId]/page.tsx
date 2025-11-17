@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -133,30 +132,24 @@ export default function TakeTestPage() {
 
   if (loading) {
     return (
-      <AppLayout>
-        <div className="space-y-6">
-          <Skeleton className="h-9 w-64" />
-          <Card>
-            <CardHeader>
-              <Skeleton className="h-6 w-48" />
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Skeleton className="h-6 w-full" />
-              <Skeleton className="h-20 w-full" />
-              <Skeleton className="h-10 w-32" />
-            </CardContent>
-          </Card>
-        </div>
-      </AppLayout>
+      <div className="space-y-6">
+        <Skeleton className="h-9 w-64" />
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-48" />
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Skeleton className="h-6 w-full" />
+            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-10 w-32" />
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   if (error && !test) {
-    return (
-      <AppLayout>
-        <div className="text-center py-12 text-destructive">{error}</div>
-      </AppLayout>
-    );
+    return <div className="text-center py-12 text-destructive">{error}</div>;
   }
 
   const handlePrint = () => {
@@ -193,8 +186,7 @@ export default function TakeTestPage() {
 
   if (results) {
     return (
-      <AppLayout>
-        <div className="space-y-6">
+      <div className="space-y-6">
           <div className="print:hidden mb-4 flex gap-2">
             <Button onClick={handlePrint} variant="outline">
               <Printer className="h-4 w-4 mr-2" />
@@ -285,7 +277,7 @@ export default function TakeTestPage() {
             </div>
           </CardContent>
         </Card>
-      </AppLayout>
+      </div>
     );
   }
 
@@ -296,8 +288,7 @@ export default function TakeTestPage() {
   const answeredCount = Object.keys(answers).length;
 
   return (
-    <AppLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold">{test.exam} Mock Test</h1>
@@ -380,8 +371,7 @@ export default function TakeTestPage() {
             </div>
           </CardContent>
         </Card>
-      </div>
-    </AppLayout>
+    </div>
   );
 }
 

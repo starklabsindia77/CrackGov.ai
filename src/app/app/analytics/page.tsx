@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select } from "@/components/ui/select";
 import { TrendingUp, TrendingDown, Target, BarChart3, Award, AlertCircle } from "lucide-react";
@@ -71,35 +70,30 @@ export default function AnalyticsPage() {
 
   if (loading) {
     return (
-      <AppLayout>
-        <div className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-4">
-            {[1, 2, 3, 4].map((i) => (
-              <Card key={i}>
-                <CardHeader>
-                  <Skeleton className="h-4 w-24" />
-                </CardHeader>
-                <CardContent>
-                  <Skeleton className="h-8 w-16" />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+      <div className="space-y-6">
+        <div className="grid gap-6 md:grid-cols-4">
+          {[1, 2, 3, 4].map((i) => (
+            <Card key={i}>
+              <CardHeader>
+                <Skeleton className="h-4 w-24" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-8 w-16" />
+              </CardContent>
+            </Card>
+          ))}
         </div>
-      </AppLayout>
+      </div>
     );
   }
 
   if (!data) {
     return (
-      <AppLayout>
-        <div className="text-center py-12">Failed to load analytics</div>
-      </AppLayout>
+      <div className="text-center py-12">Failed to load analytics</div>
     );
   }
 
   return (
-    <AppLayout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
@@ -361,8 +355,7 @@ export default function AnalyticsPage() {
             </CardContent>
           </Card>
         )}
-      </div>
-    </AppLayout>
+    </div>
   );
 }
 

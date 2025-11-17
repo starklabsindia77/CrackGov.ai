@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
@@ -51,8 +50,7 @@ export default function TestsPage() {
   };
 
   return (
-    <AppLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Mock Tests</h1>
           <p className="mt-2 text-gray-600">
@@ -97,8 +95,7 @@ export default function TestsPage() {
             </Button>
           </CardContent>
         </Card>
-      </div>
-    </AppLayout>
+    </div>
   );
 }
 

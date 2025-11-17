@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -78,8 +77,7 @@ export default function DoubtsPage() {
   };
 
   return (
-    <AppLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Ask a Doubt</h1>
           <p className="mt-2 text-gray-600">
@@ -200,8 +198,7 @@ export default function DoubtsPage() {
             </Card>
           </div>
         </div>
-      </div>
-    </AppLayout>
+    </div>
   );
 }
 

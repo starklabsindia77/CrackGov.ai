@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select } from "@/components/ui/select";
 import { Trophy, Medal, Award, User } from "lucide-react";
@@ -69,8 +68,7 @@ export default function LeaderboardPage() {
   };
 
   return (
-    <AppLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
             Leaderboard
@@ -200,8 +198,7 @@ export default function LeaderboardPage() {
             )}
           </CardContent>
         </Card>
-      </div>
-    </AppLayout>
+    </div>
   );
 }
 

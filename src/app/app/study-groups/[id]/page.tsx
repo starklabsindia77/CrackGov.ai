@@ -100,41 +100,30 @@ export default function StudyGroupPage() {
   };
 
   if (loading) {
-    return (
-      <AppLayout>
-        <div className="text-center py-8">Loading...</div>
-      </AppLayout>
-    );
+    return <div className="text-center py-8">Loading...</div>;
   }
 
   if (!group) {
-    return (
-      <AppLayout>
-        <div className="text-center py-8">Group not found</div>
-      </AppLayout>
-    );
+    return <div className="text-center py-8">Group not found</div>;
   }
 
   if (!group.isMember) {
     return (
-      <AppLayout>
-        <Card>
-          <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground mb-4">
-              You need to join this group to view it
-            </p>
-            <Link href="/app/study-groups">
-              <Button>Back to Groups</Button>
-            </Link>
-          </CardContent>
-        </Card>
-      </AppLayout>
+      <Card>
+        <CardContent className="py-12 text-center">
+          <p className="text-muted-foreground mb-4">
+            You need to join this group to view it
+          </p>
+          <Link href="/app/study-groups">
+            <Button>Back to Groups</Button>
+          </Link>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <AppLayout>
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex items-center gap-4">
           <Link href="/app/study-groups">
             <Button variant="ghost" size="sm">
@@ -246,8 +235,7 @@ export default function StudyGroupPage() {
             )}
           </div>
         </div>
-      </div>
-    </AppLayout>
+    </div>
   );
 }
 

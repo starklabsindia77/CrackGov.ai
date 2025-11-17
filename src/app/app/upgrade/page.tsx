@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, CreditCard, Shield, Zap, Headphones } from "lucide-react";
@@ -131,8 +130,7 @@ export default function UpgradePage() {
   ];
 
   return (
-    <AppLayout>
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-gray-900">Upgrade to Pro</h1>
           <p className="mt-2 text-gray-600">
@@ -238,8 +236,7 @@ export default function UpgradePage() {
             </CardContent>
           </Card>
         </div>
-      </div>
-    </AppLayout>
+    </div>
   );
 }
 

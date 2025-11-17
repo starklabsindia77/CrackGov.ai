@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -151,8 +150,7 @@ export default function FlashcardsPage() {
   if (studyMode && dueCards.length > 0) {
     const currentCard = dueCards[currentIndex];
     return (
-      <AppLayout>
-        <div className="max-w-2xl mx-auto space-y-6">
+      <div className="max-w-2xl mx-auto space-y-6">
           <div className="text-center">
             <p className="text-sm text-muted-foreground">
               Card {currentIndex + 1} of {dueCards.length}
@@ -209,14 +207,12 @@ export default function FlashcardsPage() {
           >
             Exit Study Mode
           </Button>
-        </div>
-      </AppLayout>
+      </div>
     );
   }
 
   return (
-    <AppLayout>
-      <div className="space-y-6">
+    <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
@@ -441,8 +437,7 @@ export default function FlashcardsPage() {
             )}
           </CardContent>
         </Card>
-      </div>
-    </AppLayout>
+    </div>
   );
 }
 
