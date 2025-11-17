@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { OnboardingTour } from "@/components/onboarding/onboarding-tour";
 import { NotificationBell } from "@/components/notifications/notification-bell";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 
@@ -52,7 +51,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     { href: "/app/analytics", label: "Analytics" },
     { href: "/app/leaderboard", label: "Leaderboard" },
     { href: "/app/doubts", label: "Ask Doubts" },
-    { href: "/faq", label: "Help" },
+    { href: "/faq", label: "FAQ" },
   ];
 
   return (
@@ -69,26 +68,30 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
             {/* Desktop Navigation - Horizontally Scrollable */}
             <div className="hidden md:flex flex-1 items-center min-w-0">
-              <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide px-2">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`inline-flex items-center px-3 py-2 rounded-lg text-body-s font-medium transition-colors whitespace-nowrap flex-shrink-0 ${
-                      pathname === item.href
-                        ? "bg-primary-teal-light text-primary-teal"
-                        : "text-text-secondary hover:text-text-primary hover:bg-bg-canvas"
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+              <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide px-2 flex-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                {navItems.map((item) => {
+                  const isActive = pathname === item.href || 
+                    (item.href === "/faq" && pathname?.startsWith("/faq")) ||
+                    (item.href === "/app/doubts" && pathname?.startsWith("/app/doubts"));
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`inline-flex items-center px-3 py-2 rounded-lg text-body-s font-medium transition-colors whitespace-nowrap flex-shrink-0 ${
+                        isActive
+                          ? "bg-primary-teal-light text-primary-teal"
+                          : "text-text-secondary hover:text-text-primary hover:bg-bg-canvas"
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
 
             {/* Right side actions - Always visible */}
             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 px-4 sm:px-6">
-              <ThemeToggle />
               <NotificationBell />
               <Link href="/app/profile" className="hidden lg:block">
                 <span className="text-body-s text-text-primary hover:text-primary-teal cursor-pointer transition-colors truncate max-w-[150px]">
