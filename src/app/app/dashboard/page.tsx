@@ -2,7 +2,7 @@ import { requireAuth } from "@/lib/auth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { BookOpen, FileQuestion, MessageCircle, History, TrendingUp, Target } from "lucide-react";
+import { BookOpen, FileQuestion, MessageCircle, History, TrendingUp, Layers, Users, Trophy, HelpCircle, LayoutDashboard } from "lucide-react";
 import { ProgressDashboard } from "@/components/progress-dashboard";
 
 export default async function DashboardPage() {
@@ -21,7 +21,7 @@ export default async function DashboardPage() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <Card className="hover:shadow-lg transition-shadow border border-borderSubtle bg-bg-card" data-onboarding="study-plan">
+          <Card className="hover:shadow-lg transition-shadow border border-borderSubtle bg-bg-card cursor-pointer" data-onboarding="study-plan">
             <CardHeader>
               <div className="flex items-center space-x-2">
                 <BookOpen className="h-5 w-5 text-primary-teal" />
@@ -38,11 +38,11 @@ export default async function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow border border-borderSubtle bg-bg-card" data-onboarding="mock-tests">
+          <Card className="hover:shadow-lg transition-shadow border border-borderSubtle bg-bg-card cursor-pointer" data-onboarding="mock-tests">
             <CardHeader>
               <div className="flex items-center space-x-2">
                 <FileQuestion className="h-5 w-5 text-primary-teal" />
-                <CardTitle className="text-heading-h3 text-text-primary">Next Mock Test</CardTitle>
+                <CardTitle className="text-heading-h3 text-text-primary">Mock Tests</CardTitle>
               </div>
               <CardDescription className="text-body-s text-text-secondary">
                 Practice with AI-generated mock tests
@@ -55,7 +55,7 @@ export default async function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow border border-borderSubtle bg-bg-card">
+          <Card className="hover:shadow-lg transition-shadow border border-borderSubtle bg-bg-card cursor-pointer">
             <CardHeader>
               <div className="flex items-center space-x-2">
                 <BookOpen className="h-5 w-5 text-primary-teal" />
@@ -72,7 +72,41 @@ export default async function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow border border-borderSubtle bg-bg-card">
+          <Card className="hover:shadow-lg transition-shadow border border-borderSubtle bg-bg-card cursor-pointer">
+            <CardHeader>
+              <div className="flex items-center space-x-2">
+                <Layers className="h-5 w-5 text-primary-teal" />
+                <CardTitle className="text-heading-h3 text-text-primary">Flashcards</CardTitle>
+              </div>
+              <CardDescription className="text-body-s text-text-secondary">
+                Study with spaced repetition flashcards
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link href="/app/flashcards">
+                <Button variant="outline" className="w-full border-borderSubtle text-text-primary hover:bg-bg-canvas">Study Flashcards</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow border border-borderSubtle bg-bg-card cursor-pointer">
+            <CardHeader>
+              <div className="flex items-center space-x-2">
+                <Users className="h-5 w-5 text-primary-teal" />
+                <CardTitle className="text-heading-h3 text-text-primary">Study Groups</CardTitle>
+              </div>
+              <CardDescription className="text-body-s text-text-secondary">
+                Join or create study groups for collaboration
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link href="/app/study-groups">
+                <Button variant="outline" className="w-full border-borderSubtle text-text-primary hover:bg-bg-canvas">View Groups</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow border border-borderSubtle bg-bg-card cursor-pointer">
             <CardHeader>
               <div className="flex items-center space-x-2">
                 <TrendingUp className="h-5 w-5 text-primary-teal" />
@@ -89,7 +123,24 @@ export default async function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-lg transition-shadow border border-borderSubtle bg-bg-card" data-onboarding="doubts">
+          <Card className="hover:shadow-lg transition-shadow border border-borderSubtle bg-bg-card cursor-pointer">
+            <CardHeader>
+              <div className="flex items-center space-x-2">
+                <Trophy className="h-5 w-5 text-primary-teal" />
+                <CardTitle className="text-heading-h3 text-text-primary">Leaderboard</CardTitle>
+              </div>
+              <CardDescription className="text-body-s text-text-secondary">
+                See how you rank against other students
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link href="/app/leaderboard">
+                <Button variant="outline" className="w-full border-borderSubtle text-text-primary hover:bg-bg-canvas">View Leaderboard</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow border border-borderSubtle bg-bg-card cursor-pointer" data-onboarding="doubts">
             <CardHeader>
               <div className="flex items-center space-x-2">
                 <MessageCircle className="h-5 w-5 text-primary-teal" />
@@ -105,26 +156,64 @@ export default async function DashboardPage() {
               </Link>
             </CardContent>
           </Card>
+
+          <Card className="hover:shadow-lg transition-shadow border border-borderSubtle bg-bg-card cursor-pointer">
+            <CardHeader>
+              <div className="flex items-center space-x-2">
+                <HelpCircle className="h-5 w-5 text-primary-teal" />
+                <CardTitle className="text-heading-h3 text-text-primary">FAQ</CardTitle>
+              </div>
+              <CardDescription className="text-body-s text-text-secondary">
+                Find answers to frequently asked questions
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link href="/faq">
+                <Button variant="outline" className="w-full border-borderSubtle text-text-primary hover:bg-bg-canvas">View FAQ</Button>
+              </Link>
+            </CardContent>
+          </Card>
         </div>
 
-        <Card className="border border-borderSubtle bg-bg-card" data-onboarding="test-history">
-          <CardHeader>
-            <div className="flex items-center space-x-2">
-              <History className="h-5 w-5 text-primary-teal" />
-              <CardTitle className="text-heading-h3 text-text-primary">Test History</CardTitle>
-            </div>
-            <CardDescription className="text-body-s text-text-secondary">
-              View your past test attempts and track progress
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Link href="/app/test-history">
-              <Button variant="outline" className="w-full border-borderSubtle text-text-primary hover:bg-bg-canvas">
-                View Test History
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
+        <div className="grid gap-6 md:grid-cols-2">
+          <Card className="border border-borderSubtle bg-bg-card cursor-pointer" data-onboarding="test-history">
+            <CardHeader>
+              <div className="flex items-center space-x-2">
+                <History className="h-5 w-5 text-primary-teal" />
+                <CardTitle className="text-heading-h3 text-text-primary">Test History</CardTitle>
+              </div>
+              <CardDescription className="text-body-s text-text-secondary">
+                View your past test attempts and track progress
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link href="/app/test-history">
+                <Button variant="outline" className="w-full border-borderSubtle text-text-primary hover:bg-bg-canvas">
+                  View Test History
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="border border-borderSubtle bg-bg-card cursor-pointer">
+            <CardHeader>
+              <div className="flex items-center space-x-2">
+                <LayoutDashboard className="h-5 w-5 text-primary-teal" />
+                <CardTitle className="text-heading-h3 text-text-primary">Dashboard</CardTitle>
+              </div>
+              <CardDescription className="text-body-s text-text-secondary">
+                Return to your main dashboard
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link href="/app/dashboard">
+                <Button variant="outline" className="w-full border-borderSubtle text-text-primary hover:bg-bg-canvas">
+                  Go to Dashboard
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       <ProgressDashboard />

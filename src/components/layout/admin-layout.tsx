@@ -2,7 +2,7 @@
 
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,12 +20,17 @@ import {
   Menu,
   X,
   ChevronRight,
+  ArrowLeft,
 } from "lucide-react";
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession();
   const pathname = usePathname();
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  
+  // Show back button when not on dashboard
+  const showBackButton = pathname !== "/admin/dashboard";
 
   const navItems = [
     { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -130,12 +135,25 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         {/* Top Header */}
         <header className="bg-bg-card border-b border-borderSubtle sticky top-0 z-30 shadow-sm">
           <div className="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="lg:hidden text-text-secondary hover:text-text-primary p-2"
-            >
-              <Menu className="h-5 w-5" />
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="lg:hidden text-text-secondary hover:text-text-primary p-2"
+              >
+                <Menu className="h-5 w-5" />
+              </button>
+              {showBackButton && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => router.back()}
+                  className="text-text-secondary hover:text-text-primary p-2"
+                  aria-label="Go back"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Button>
+              )}
+            </div>
             <div className="flex-1" />
             <div className="flex items-center gap-4">
               <Button
