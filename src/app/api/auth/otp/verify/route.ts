@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyOTP } from "@/lib/otp";
 import { prisma } from "@/lib/prisma";
-import { authRateLimiter } from "@/lib/rate-limit";
+import { authRateLimiter } from "@/lib/rate-limit-redis";
 import { z } from "zod";
 
 const verifyOTPSchema = z.object({

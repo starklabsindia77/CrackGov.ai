@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { callAI } from "@/lib/ai-orchestrator";
 import { prisma } from "@/lib/prisma";
-import { aiRateLimiter } from "@/lib/rate-limit";
+import { aiRateLimiter } from "@/lib/rate-limit-redis";
 import { logApiError } from "@/lib/logger";
 import { z } from "zod";
 

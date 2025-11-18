@@ -16,21 +16,34 @@ An MVP SaaS web application for AI-powered government exam preparation built wit
 - 📝 **CMS**: Content Management System for managing pages, FAQs, announcements, and banners
 - 💳 **Razorpay Integration**: Complete payment gateway integration for subscriptions
 - 🔄 **AI Orchestrator**: Central AI service with automatic failover, key rotation, and health tracking
-- 🛡️ **Rate Limiting**: API rate limiting to prevent abuse
+- 🛡️ **Rate Limiting**: Distributed Redis-based rate limiting
 - 📝 **Structured Logging**: Comprehensive error logging and monitoring
 - ✅ **Test Suite**: Basic test coverage with Vitest
+- 🚀 **Scalability**: Built to handle millions of users
+  - Redis caching layer with TTL support
+  - Database read replicas for read-heavy operations
+  - Message queues for async processing (AI, email, leaderboard)
+  - Real-time notifications via Server-Sent Events
+  - Distributed rate limiting across instances
+  - Comprehensive monitoring (Sentry + Prometheus)
+  - DataLoader for batch loading
+  - Cursor-based pagination
 
 ## Tech Stack
 
 - **Framework**: Next.js 14 (App Router)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS + shadcn/ui components
-- **Database**: PostgreSQL with Prisma ORM
+- **Database**: PostgreSQL with Prisma ORM (with read replicas)
+- **Cache**: Redis (distributed caching)
+- **Queue**: BullMQ (background job processing)
 - **Authentication**: NextAuth.js (Credentials provider)
 - **AI**: OpenAI GPT-4o-mini (via AI Orchestrator)
 - **Data Fetching**: SWR
 - **Testing**: Vitest
-- **Rate Limiting**: LRU Cache based
+- **Rate Limiting**: Redis-based distributed rate limiting
+- **Monitoring**: Sentry (error tracking) + Prometheus (metrics)
+- **Real-time**: Server-Sent Events (SSE)
 
 ## Prerequisites
 
@@ -49,10 +62,15 @@ An MVP SaaS web application for AI-powered government exam preparation built wit
    Create a `.env` file in the root directory:
    ```env
    DATABASE_URL="postgresql://user:password@localhost:5432/crackgov"
+   DATABASE_READ_REPLICA_URL="postgresql://user:password@localhost:5432/crackgov" # Optional
+   REDIS_URL="redis://localhost:6379"
    NEXTAUTH_URL="http://localhost:3000"
    NEXTAUTH_SECRET="your-secret-key-here"
    ENCRYPTION_KEY="your-32-byte-encryption-key-here"
    OPENAI_API_KEY="your-openai-api-key-here"
+   # Sentry (optional, for error tracking)
+   NEXT_PUBLIC_SENTRY_DSN="your-sentry-dsn"
+   SENTRY_DSN="your-sentry-dsn"
    # Razorpay credentials are optional - configure via Admin Panel > Payment Config
    ```
 
@@ -65,18 +83,33 @@ An MVP SaaS web application for AI-powered government exam preparation built wit
    openssl rand -base64 32
    ```
 
-3. **Set up the database**:
+3. **Set up Redis** (required for caching and queues):
+   ```bash
+   # Using Docker
+   docker run -d -p 6379:6379 --name redis redis:latest
+   
+   # Or install Redis locally
+   # macOS: brew install redis && brew services start redis
+   # Linux: sudo apt-get install redis-server && sudo systemctl start redis
+   ```
+
+4. **Set up the database**:
    ```bash
    npx prisma generate
    npx prisma db push
    ```
 
-4. **Run the development server**:
+5. **Start workers** (in a separate terminal, required for background jobs):
+   ```bash
+   tsx scripts/start-workers.ts
+   ```
+
+6. **Run the development server**:
    ```bash
    npm run dev
    ```
 
-5. **Open your browser**:
+7. **Open your browser**:
    Navigate to [http://localhost:3000](http://localhost:3000)
 
 ## Project Structure

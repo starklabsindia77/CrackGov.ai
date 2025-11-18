@@ -4,7 +4,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 import { callAI } from "@/lib/ai-orchestrator";
 import { z } from "zod";
-import { aiRateLimiter } from "@/lib/rate-limit";
+import { aiRateLimiter } from "@/lib/rate-limit-redis";
 
 // This is a simplified version - in production, you'd use a proper PDF parsing library
 // like pdf-parse or pdfjs-dist

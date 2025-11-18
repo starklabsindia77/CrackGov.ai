@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateOTP } from "@/lib/otp";
-import { authRateLimiter } from "@/lib/rate-limit";
+import { authRateLimiter } from "@/lib/rate-limit-redis";
 import { z } from "zod";
 
 const sendOTPSchema = z.object({

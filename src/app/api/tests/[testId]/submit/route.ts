@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
-import { sendTestResultEmail } from "@/lib/email";
+import { enqueueEmail, enqueueLeaderboardUpdate } from "@/lib/queue";
 import { z } from "zod";
 
 const submitTestSchema = z.object({
@@ -104,22 +104,30 @@ export async function POST(
       },
     });
 
-    // Send test result email notification (async, don't wait)
-    sendTestResultEmail(attempt.user.email, {
-      exam: test.exam,
-      score,
-      total,
-      accuracy,
-      weakTopics,
+    // Send test result email via queue (async)
+    enqueueEmail({
+      to: attempt.user.email,
+      subject: `Test Results - ${test.exam}`,
+      template: "test-result",
+      data: {
+        exam: test.exam,
+        score,
+        total,
+        accuracy,
+        weakTopics,
+      },
     }).catch((error) => {
-      console.error("Error sending test result email:", error);
+      console.error("Error enqueueing test result email:", error);
     });
 
-    // Update leaderboard (async, don't wait)
-    fetch(`${process.env.NEXTAUTH_URL || "http://localhost:3000"}/api/leaderboard/update?userId=${session.user.id}&exam=${test.exam}`, {
-      method: "POST",
+    // Update leaderboard via queue (async)
+    enqueueLeaderboardUpdate({
+      userId: session.user.id,
+      testId: attempt.id,
+      score,
+      exam: test.exam,
     }).catch((error) => {
-      console.error("Error updating leaderboard:", error);
+      console.error("Error enqueueing leaderboard update:", error);
     });
 
     return NextResponse.json({

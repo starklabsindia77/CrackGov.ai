@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sendPasswordResetEmail } from "@/lib/email";
-import { authRateLimiter } from "@/lib/rate-limit";
+import { authRateLimiter } from "@/lib/rate-limit-redis";
 import { z } from "zod";
 import crypto from "crypto";
 

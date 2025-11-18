@@ -59,6 +59,10 @@ model Test {
 
   questions TestQuestion[]
   attempts  TestAttempt[]
+
+  @@index([userId])
+  @@index([userId, createdAt])
+  @@index([exam])
 }
 
 model TestQuestion {
@@ -88,6 +92,9 @@ model TestAttempt {
 
   @@index([userId])
   @@index([testId])
+  @@index([userId, createdAt])
+  @@index([testId, score])
+  @@index([createdAt])
 }
 
 model AiProvider {
@@ -277,6 +284,7 @@ model Notification {
 
   @@index([userId])
   @@index([userId, read])
+  @@index([userId, read, createdAt])
   @@index([createdAt])
 }
 
@@ -368,6 +376,9 @@ model QuestionBank {
   @@index([difficulty])
   @@index([exam, topic])
   @@index([exam, difficulty])
+  @@index([exam, topic, difficulty])
+  @@index([createdAt])
+  @@index([usageCount])
 }
 
 model QuestionAttempt {
@@ -521,8 +532,10 @@ model LeaderboardEntry {
 
   @@unique([userId, exam, period, periodStart])
   @@index([userId])
+  @@index([userId, period])
   @@index([exam, period, periodStart])
   @@index([period, periodStart, score])
+  @@index([period, exam, score])
 }
 
 // Email Campaigns

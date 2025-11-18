@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { prisma } from "@/lib/prisma";
+import { prismaRead, prisma } from "@/lib/prisma";
+import { cache, CacheKeys } from "@/lib/cache";
 
 export async function GET(request: NextRequest) {
   try {
@@ -19,20 +20,42 @@ export async function GET(request: NextRequest) {
       where.read = false;
     }
 
-    const notifications = await prisma.notification.findMany({
+    // Generate cache key
+    const cacheKey = `${CacheKeys.notifications(session.user.id)}:${unreadOnly ? "unread" : "all"}:${limit}`;
+    const unreadCountKey = `notifications:unread-count:${session.user.id}`;
+
+    // Try cache first (cache for 30 seconds for notifications)
+    const cached = await cache.get<any>(cacheKey);
+    const cachedUnreadCount = await cache.get<number>(unreadCountKey);
+
+    if (cached && cachedUnreadCount !== null) {
+      return NextResponse.json({
+        notifications: cached.notifications,
+        unreadCount: cachedUnreadCount,
+      });
+    }
+
+    // Use read replica for queries
+    const notifications = await prismaRead.notification.findMany({
       where,
       orderBy: { createdAt: "desc" },
       take: limit,
     });
 
-    const unreadCount = await prisma.notification.count({
+    const unreadCount = await prismaRead.notification.count({
       where: { userId: session.user.id, read: false },
     });
 
-    return NextResponse.json({
+    const response = {
       notifications,
       unreadCount,
-    });
+    };
+
+    // Cache for 30 seconds (notifications change frequently)
+    await cache.set(cacheKey, response, 30);
+    await cache.set(unreadCountKey, unreadCount, 30);
+
+    return NextResponse.json(response);
   } catch (error) {
     console.error("Error fetching notifications:", error);
     return NextResponse.json(
@@ -68,6 +91,10 @@ export async function POST(request: NextRequest) {
         link,
       },
     });
+
+    // Invalidate cache for this user's notifications
+    await cache.invalidatePattern(`notifications:${session.user.id}*`);
+    await cache.del(`notifications:unread-count:${session.user.id}`);
 
     return NextResponse.json({ notification }, { status: 201 });
   } catch (error) {

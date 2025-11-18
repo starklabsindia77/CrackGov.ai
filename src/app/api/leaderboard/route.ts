@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { prisma } from "@/lib/prisma";
+import { prismaRead, prisma } from "@/lib/prisma";
+import { cache, CacheKeys } from "@/lib/cache";
 
 export async function GET(request: NextRequest) {
   try {
@@ -43,6 +44,23 @@ export async function GET(request: NextRequest) {
         periodEnd = null;
     }
 
+    // Generate cache key
+    const cacheKey = CacheKeys.leaderboard(period, exam);
+    const userRankCacheKey = `leaderboard:user-rank:${session.user.id}:${period}:${exam || "all"}`;
+
+    // Try cache first (cache for 5 minutes for leaderboard)
+    const cached = await cache.get<any>(cacheKey);
+    const cachedUserRank = await cache.get<any>(userRankCacheKey);
+
+    if (cached && cachedUserRank) {
+      return NextResponse.json({
+        entries: cached.entries,
+        userRank: cachedUserRank,
+        period,
+        exam,
+      });
+    }
+
     // Get leaderboard entries
     const where: any = {
       period,
@@ -51,7 +69,8 @@ export async function GET(request: NextRequest) {
     if (exam) where.exam = exam;
     if (periodEnd) where.periodEnd = periodEnd;
 
-    const entries = await prisma.leaderboardEntry.findMany({
+    // Use read replica for queries
+    const entries = await prismaRead.leaderboardEntry.findMany({
       where,
       include: {
         user: {
@@ -73,7 +92,7 @@ export async function GET(request: NextRequest) {
     }));
 
     // Get user's rank
-    const userEntry = await prisma.leaderboardEntry.findFirst({
+    const userEntry = await prismaRead.leaderboardEntry.findFirst({
       where: {
         ...where,
         userId: session.user.id,
@@ -90,7 +109,7 @@ export async function GET(request: NextRequest) {
     });
 
     const userRank = userEntry
-      ? await prisma.leaderboardEntry.count({
+      ? await prismaRead.leaderboardEntry.count({
           where: {
             ...where,
             score: { gt: userEntry.score },
@@ -98,17 +117,27 @@ export async function GET(request: NextRequest) {
         }) + 1
       : null;
 
-    return NextResponse.json({
+    const userRankData = userRank
+      ? {
+          ...userEntry,
+          rank: userRank,
+        }
+      : null;
+
+    const response = {
       entries: rankedEntries,
-      userRank: userRank
-        ? {
-            ...userEntry,
-            rank: userRank,
-          }
-        : null,
+      userRank: userRankData,
       period,
       exam,
-    });
+    };
+
+    // Cache for 5 minutes (leaderboard updates frequently)
+    await cache.set(cacheKey, { entries: rankedEntries, period, exam }, 300);
+    if (userRankData) {
+      await cache.set(userRankCacheKey, userRankData, 300);
+    }
+
+    return NextResponse.json(response);
   } catch (error) {
     console.error("Error fetching leaderboard:", error);
     return NextResponse.json(

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
+import { cache } from "@/lib/cache";
 
 export async function PATCH(
   request: NextRequest,
@@ -23,6 +24,10 @@ export async function PATCH(
       },
       data: { read },
     });
+
+    // Invalidate cache for this user's notifications
+    await cache.invalidatePattern(`notifications:${session.user.id}*`);
+    await cache.del(`notifications:unread-count:${session.user.id}`);
 
     return NextResponse.json({ notification });
   } catch (error) {
@@ -50,6 +55,10 @@ export async function DELETE(
         userId: session.user.id,
       },
     });
+
+    // Invalidate cache for this user's notifications
+    await cache.invalidatePattern(`notifications:${session.user.id}*`);
+    await cache.del(`notifications:unread-count:${session.user.id}`);
 
     return NextResponse.json({ message: "Notification deleted" });
   } catch (error) {

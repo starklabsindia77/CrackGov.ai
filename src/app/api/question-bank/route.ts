@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { prisma } from "@/lib/prisma";
+import { prismaRead, prisma } from "@/lib/prisma";
+import { cache, CacheKeys } from "@/lib/cache";
 
 export async function GET(request: NextRequest) {
   try {
@@ -33,8 +34,26 @@ export async function GET(request: NextRequest) {
       ];
     }
 
+    // Generate cache key
+    const cacheKey = cache.generateKey("question-bank", {
+      exam: exam || "",
+      topic: topic || "",
+      difficulty: difficulty || "",
+      subject: subject || "",
+      search: search || "",
+      page,
+      limit,
+    });
+
+    // Try cache first
+    const cached = await cache.get<any>(cacheKey);
+    if (cached) {
+      return NextResponse.json(cached);
+    }
+
+    // Use read replica for queries
     const [questions, total] = await Promise.all([
-      prisma.questionBank.findMany({
+      prismaRead.questionBank.findMany({
         where,
         skip,
         take: limit,
@@ -56,30 +75,64 @@ export async function GET(request: NextRequest) {
           createdAt: true,
         },
       }),
-      prisma.questionBank.count({ where }),
+      prismaRead.questionBank.count({ where }),
     ]);
 
-    // Get available filters
-    const [exams, topics, subjects, difficulties] = await Promise.all([
-      prisma.questionBank.findMany({
-        select: { exam: true },
-        distinct: ["exam"],
-      }),
-      prisma.questionBank.findMany({
-        where: exam ? { exam } : undefined,
-        select: { topic: true },
-        distinct: ["topic"],
-      }),
-      prisma.questionBank.findMany({
-        where: exam ? { exam } : undefined,
-        select: { subject: true },
-        distinct: ["subject"],
-      }),
-      prisma.questionBank.findMany({
-        select: { difficulty: true },
-        distinct: ["difficulty"],
-      }),
-    ]);
+    // Get available filters (cache these separately as they change less frequently)
+    const filtersCacheKey = `question-bank-filters:${exam || "all"}`;
+    const cachedFilters = await cache.get<any>(filtersCacheKey);
+    
+    let exams, topics, subjects, difficulties;
+    if (cachedFilters) {
+      ({ exams, topics, subjects, difficulties } = cachedFilters);
+    } else {
+      [exams, topics, subjects, difficulties] = await Promise.all([
+        prismaRead.questionBank.findMany({
+          select: { exam: true },
+          distinct: ["exam"],
+        }),
+        prismaRead.questionBank.findMany({
+          where: exam ? { exam } : undefined,
+          select: { topic: true },
+          distinct: ["topic"],
+        }),
+        prismaRead.questionBank.findMany({
+          where: exam ? { exam } : undefined,
+          select: { subject: true },
+          distinct: ["subject"],
+        }),
+        prismaRead.questionBank.findMany({
+          select: { difficulty: true },
+          distinct: ["difficulty"],
+        }),
+      ]);
+      
+      // Cache filters for 1 hour
+      await cache.set(
+        filtersCacheKey,
+        { exams, topics, subjects, difficulties },
+        3600
+      );
+    }
+
+    const response = {
+      questions,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+      filters: {
+        exams: exams.map((e: any) => e.exam).filter(Boolean),
+        topics: topics.map((t: any) => t.topic).filter(Boolean),
+        subjects: subjects.map((s: any) => s.subject).filter(Boolean),
+        difficulties: difficulties.map((d: any) => d.difficulty).filter(Boolean),
+      },
+    };
+
+    // Cache response for 5 minutes
+    await cache.set(cacheKey, response, 300);
 
     return NextResponse.json({
       questions,
