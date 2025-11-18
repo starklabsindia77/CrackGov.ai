@@ -1,5 +1,9 @@
 # Test Coverage Summary
 
+## Related Documentation
+
+- [Implementation Summary](../implementation/implementation-summary.md) - Implementation details
+
 ## ✅ New Test Files Added
 
 ### Security Tests

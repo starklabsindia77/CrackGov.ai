@@ -1,4 +1,9 @@
-# High Priority Features Implementation Summary
+# High Priority Features Implementation
+
+## Related Documentation
+
+- [Implementation Summary](../implementation/implementation-summary.md) - Complete implementation details
+- [Quick Start Guide](../getting-started/quick-start.md) - Getting started
 
 ## ✅ Completed Features
 

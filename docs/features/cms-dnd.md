@@ -1,4 +1,8 @@
-# CMS Drag-and-Drop Implementation
+# CMS Drag & Drop Implementation
+
+## Related Documentation
+
+- [High Priority Features](./high-priority.md) - CMS implementation details
 
 ## Overview
 

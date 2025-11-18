@@ -1,5 +1,9 @@
 # Image Optimization Guide
 
+## Related Documentation
+
+- [Implementation Summary](../implementation/implementation-summary.md) - Implementation details
+
 ## ✅ Implemented Optimizations
 
 ### 1. Next.js Image Configuration (`next.config.mjs`)

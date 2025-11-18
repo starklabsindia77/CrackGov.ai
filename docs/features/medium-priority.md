@@ -1,4 +1,8 @@
-# Medium Priority Features Implementation Summary
+# Medium Priority Features Implementation
+
+## Related Documentation
+
+- [Implementation Summary](../implementation/implementation-summary.md) - Complete implementation details
 
 ## ✅ Completed Features
 

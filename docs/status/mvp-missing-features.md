@@ -1,5 +1,10 @@
 # Missing MVP Features Analysis
 
+## Related Documentation
+
+- [High Priority Features](../features/high-priority.md) - Implemented features
+- [Medium Priority Features](../features/medium-priority.md) - Additional features
+
 ## Critical MVP Features Missing
 
 ### 1. **Landing/Marketing Page** 🔴 HIGH PRIORITY

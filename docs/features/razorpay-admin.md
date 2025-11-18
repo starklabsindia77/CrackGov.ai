@@ -1,4 +1,8 @@
-# Razorpay Credentials Management via Admin Panel
+# Razorpay Admin Management
+
+## Related Documentation
+
+- [High Priority Features](./high-priority.md) - Payment integration details
 
 ## Overview
 

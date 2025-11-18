@@ -1,6 +1,11 @@
-# Scalability Implementation Summary
+# Scalability Implementation
 
 This document tracks the implementation of scalability improvements across all phases.
+
+## Related Documentation
+
+- [Implementation Summary](./implementation-summary.md) - Complete implementation details
+- [Deployment Guide](../deployment/deployment-guide.md) - Production deployment
 
 ## Phase 1: Immediate Improvements ✅ COMPLETED
 

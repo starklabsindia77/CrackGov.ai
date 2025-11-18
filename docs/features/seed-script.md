@@ -1,4 +1,10 @@
-# Database Seeding Script
+# Seed Script Documentation
+
+## Related Documentation
+
+- [Quick Start Guide](../getting-started/quick-start.md) - Development setup
+
+## Overview
 
 This script populates your database with comprehensive dummy data for testing and development.
 

@@ -173,6 +173,20 @@ API documentation is available in OpenAPI format:
 - File: `openapi.yaml`
 - View online: Use Swagger UI or similar tool
 
+## Documentation
+
+All project documentation is organized in the [`docs/`](./docs/) directory:
+
+- **[Quick Start Guide](./docs/getting-started/quick-start.md)** - Get started quickly
+- **[Deployment Guide](./docs/deployment/deployment-guide.md)** - Production deployment
+- **[Implementation Summary](./docs/implementation/implementation-summary.md)** - Complete implementation details
+- **[Scalability Implementation](./docs/implementation/scalability.md)** - Scalability features
+- **[Test Coverage](./docs/testing/test-coverage.md)** - Testing documentation
+- **[Image Optimization](./docs/performance/image-optimization.md)** - Performance optimization
+- **[Feature Documentation](./docs/features/)** - Feature-specific documentation
+
+See [docs/README.md](./docs/README.md) for the complete documentation index.
+
 ## Project Structure
 
 ```
