@@ -47,6 +47,9 @@ model User {
   subscriptionUsages SubscriptionUsage[]
   dailyTasks         DailyTask[]
   pyqAnalyses        PyqAnalysis[]
+  generatedExams      GeneratedExam[]
+  examSessions        ExamSession[]
+  examAttempts       ExamAttempt[]
 }
 
 model Test {
@@ -688,5 +691,111 @@ model PreviousYearQuestion {
   @@index([exam, year])
   @@index([topic])
   @@index([exam, year, topic])
+}
+
+// AI-Based Exam Generator Models
+model ExamTemplate {
+  id              String   @id @default(cuid())
+  examName        String   // e.g. "UPSC Prelims", "SSC CGL", "Banking PO"
+  examCode        String   @unique // e.g. "UPSC_PRELIMS", "SSC_CGL"
+  description     String?
+  totalQuestions  Int      // Total number of questions
+  timeLimit       Int      // Time limit in minutes
+  sections        Json     // Array of sections with question counts, subjects, etc.
+  markingScheme   Json     // { positive: 2, negative: 0.5, noNegative: false }
+  questionTypes   String[] // ["MCQ", "True/False", "Numerical", etc.]
+  difficultyDistribution Json // { easy: 30, medium: 50, hard: 20 } in percentage
+  syllabus        Json?    // Topics and subjects covered
+  guidelines      Json?    // Exam-specific rules and guidelines
+  instructions    String?  // General instructions for the exam
+  isActive        Boolean  @default(true)
+  createdBy       String?  // Admin user ID
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  generatedExams   GeneratedExam[]
+
+  @@index([examCode])
+  @@index([examName])
+  @@index([isActive])
+}
+
+model GeneratedExam {
+  id              String   @id @default(cuid())
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          String
+  template        ExamTemplate @relation(fields: [templateId], references: [id])
+  templateId      String
+  examName        String
+  examCode        String
+  totalQuestions  Int
+  timeLimit       Int      // in minutes
+  questions       Json     // Full exam questions array
+  metadata        Json?    // Additional metadata (generation params, AI model used, etc.)
+  status          String   @default("generated") // "generated", "started", "completed", "expired"
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  sessions        ExamSession[]
+  attempts        ExamAttempt[]
+
+  @@index([userId])
+  @@index([userId, createdAt])
+  @@index([templateId])
+  @@index([status])
+  @@index([examCode])
+}
+
+model ExamSession {
+  id              String   @id @default(cuid())
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          String
+  exam            GeneratedExam @relation(fields: [examId], references: [id], onDelete: Cascade)
+  examId          String
+  startedAt       DateTime @default(now())
+  expiresAt       DateTime // Calculated from timeLimit
+  currentQuestion Int      @default(0) // Index of current question
+  answers         Json     // { questionId: selectedOption }
+  timeRemaining   Int      // Time remaining in seconds
+  status          String   @default("in_progress") // "in_progress", "completed", "expired", "abandoned"
+  lastActivityAt  DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+  @@index([examId])
+  @@index([status])
+  @@index([expiresAt])
+  @@index([userId, examId])
+}
+
+model ExamAttempt {
+  id              String   @id @default(cuid())
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          String
+  exam            GeneratedExam @relation(fields: [examId], references: [id], onDelete: Cascade)
+  examId          String
+  startedAt       DateTime
+  completedAt     DateTime @default(now())
+  timeTaken       Int      // Time taken in seconds
+  totalQuestions  Int
+  answered        Int      // Number of questions answered
+  correct         Int      // Number of correct answers
+  incorrect       Int      // Number of incorrect answers
+  unattempted     Int      // Number of unattempted questions
+  score           Float    // Total score after applying marking scheme
+  maxScore        Float    // Maximum possible score
+  percentage      Float    // Percentage score
+  answers         Json     // Detailed answers with correctness
+  topicBreakdown  Json?    // Topic-wise performance
+  sectionBreakdown Json?   // Section-wise performance
+  analysis        Json?    // AI-generated analysis and recommendations
+  createdAt       DateTime @default(now())
+
+  @@index([userId])
+  @@index([userId, createdAt])
+  @@index([examId])
+  @@index([score])
+  @@index([completedAt])
 }
 

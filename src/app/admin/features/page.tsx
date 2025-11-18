@@ -29,6 +29,7 @@ const FEATURES = [
   { code: "MOCK_TEST", name: "Mock Test Generator" },
   { code: "DOUBT_CHAT", name: "Doubt Chat" },
   { code: "NOTES_GENERATOR", name: "Notes Generator" },
+  { code: "EXAM_GENERATOR", name: "AI Exam Generator" },
 ];
 
 function FeatureConfigCard({
