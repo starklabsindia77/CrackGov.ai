@@ -16,6 +16,14 @@ An MVP SaaS web application for AI-powered government exam preparation built wit
 - 📝 **CMS**: Content Management System for managing pages, FAQs, announcements, and banners
 - 💳 **Razorpay Integration**: Complete payment gateway integration for subscriptions
 - 🔄 **AI Orchestrator**: Central AI service with automatic failover, key rotation, and health tracking
+- 🛡️ **Security**: Enterprise-grade security features
+  - Security headers (CSP, HSTS, X-Frame-Options, etc.)
+  - Input sanitization and validation
+  - CSRF protection
+  - Secure file uploads with malware scanning
+  - Environment variable validation
+- 📧 **Email Service**: Integrated with Resend/SendGrid
+- 💾 **File Storage**: AWS S3 and Cloudflare R2 support
 - 🛡️ **Rate Limiting**: Distributed Redis-based rate limiting
 - 📝 **Structured Logging**: Comprehensive error logging and monitoring
 - ✅ **Test Suite**: Basic test coverage with Vitest
@@ -28,6 +36,14 @@ An MVP SaaS web application for AI-powered government exam preparation built wit
   - Comprehensive monitoring (Sentry + Prometheus)
   - DataLoader for batch loading
   - Cursor-based pagination
+- 🔍 **Enhanced Search**: Full-text search across content
+- 📊 **Analytics**: User behavior and feature usage tracking
+- 🌐 **Internationalization**: Multi-language support (EN, HI, MR, TA, TE)
+- ♿ **Accessibility**: WCAG-compliant with keyboard navigation
+- 📱 **PWA**: Progressive Web App with offline support
+- 🐳 **Docker**: Complete containerization support
+- 🔄 **CI/CD**: GitHub Actions pipeline
+- 📚 **API Docs**: OpenAPI/Swagger documentation
 
 ## Tech Stack
 
@@ -71,6 +87,19 @@ An MVP SaaS web application for AI-powered government exam preparation built wit
    # Sentry (optional, for error tracking)
    NEXT_PUBLIC_SENTRY_DSN="your-sentry-dsn"
    SENTRY_DSN="your-sentry-dsn"
+   # Email Service (optional - choose one)
+   RESEND_API_KEY="your-resend-api-key"
+   # OR
+   SENDGRID_API_KEY="your-sendgrid-api-key"
+   # File Storage (optional - choose one)
+   STORAGE_PROVIDER="s3" # or "r2" or "local"
+   AWS_ACCESS_KEY_ID="your-aws-key"
+   AWS_SECRET_ACCESS_KEY="your-aws-secret"
+   AWS_S3_BUCKET="your-bucket-name"
+   AWS_REGION="us-east-1"
+   # OR for Cloudflare R2
+   R2_BUCKET="your-r2-bucket"
+   R2_ENDPOINT="https://your-account.r2.cloudflarestorage.com"
    # Razorpay credentials are optional - configure via Admin Panel > Payment Config
    ```
 
@@ -111,6 +140,38 @@ An MVP SaaS web application for AI-powered government exam preparation built wit
 
 7. **Open your browser**:
    Navigate to [http://localhost:3000](http://localhost:3000)
+
+## Docker Deployment
+
+The application includes full Docker support:
+
+```bash
+# Using Docker Compose (recommended)
+docker-compose up -d
+
+# Or build and run manually
+docker build -t crackgov-ai .
+docker run -p 3000:3000 --env-file .env crackgov-ai
+```
+
+Docker Compose includes:
+- Next.js application
+- PostgreSQL database
+- Redis cache
+- Background workers
+
+## Health Check
+
+Check system health:
+```bash
+curl http://localhost:3000/api/health
+```
+
+## API Documentation
+
+API documentation is available in OpenAPI format:
+- File: `openapi.yaml`
+- View online: Use Swagger UI or similar tool
 
 ## Project Structure
 

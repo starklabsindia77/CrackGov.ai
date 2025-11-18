@@ -1,24 +1,12 @@
-// Email service - stubbed for MVP
-// In production, integrate with SendGrid, Resend, or similar service
+// Email service - now uses email-service.ts with Resend/SendGrid support
+// Re-export from email-service for backward compatibility
 
-export async function sendPasswordResetEmail(
-  email: string,
-  resetToken: string
-): Promise<void> {
-  // TODO: Integrate with real email service
-  const resetUrl = `${process.env.NEXTAUTH_URL}/auth/reset-password?token=${resetToken}`;
-  
-  console.log("Password reset email (stubbed):");
-  console.log(`To: ${email}`);
-  console.log(`Reset URL: ${resetUrl}`);
-  
-  // In production, use:
-  // await emailService.send({
-  //   to: email,
-  //   subject: "Reset Your Password",
-  //   html: `Click here to reset your password: ${resetUrl}`,
-  // });
-}
+export {
+  sendPasswordResetEmail,
+  sendWelcomeEmail,
+  sendTestResultEmail,
+  sendEmail,
+} from "./email-service";
 
 export async function sendVerificationEmail(
   email: string,

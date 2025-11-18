@@ -1,0 +1,43 @@
+{
+  "name": "CrackGov.ai - AI-Powered Exam Preparation",
+  "short_name": "CrackGov.ai",
+  "description": "Personalized AI study plans, mock tests, and doubt solving for government exams",
+  "start_url": "/app/dashboard",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#14b8a6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Take Test",
+      "short_name": "Test",
+      "description": "Start a new mock test",
+      "url": "/app/tests",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Study Plan",
+      "short_name": "Plan",
+      "description": "View your study plan",
+      "url": "/app/study-plan",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
+

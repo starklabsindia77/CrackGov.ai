@@ -32,10 +32,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check file type
-    if (!file.name.endsWith(".pdf")) {
+    // Validate file upload
+    const { validatePdfUpload, scanFile } = await import("@/lib/file-upload");
+    const validation = validatePdfUpload(file);
+    if (!validation.valid) {
       return NextResponse.json(
-        { error: "Only PDF files are supported" },
+        { error: validation.error },
+        { status: 400 }
+      );
+    }
+
+    // Scan file for security
+    const scanResult = await scanFile(file);
+    if (!scanResult.safe) {
+      return NextResponse.json(
+        { error: `File security check failed: ${scanResult.reason}` },
         { status: 400 }
       );
     }
