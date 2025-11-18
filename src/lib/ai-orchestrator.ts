@@ -192,6 +192,7 @@ export async function callAI(options: AiCallOptions): Promise<AiCallResult> {
       include: {
         primaryProvider: true,
         secondaryProvider: true,
+        tertiaryProvider: true,
       },
     });
 
@@ -228,6 +229,18 @@ export async function callAI(options: AiCallOptions): Promise<AiCallResult> {
       const result = await tryProvider(
         featureConfig.secondaryProvider.code,
         featureConfig.secondaryProvider.id,
+        finalOptions
+      );
+      if (result.success) {
+        return result;
+      }
+    }
+
+    // Fallback to tertiary provider
+    if (featureConfig.tertiaryProvider) {
+      const result = await tryProvider(
+        featureConfig.tertiaryProvider.code,
+        featureConfig.tertiaryProvider.id,
         finalOptions
       );
       if (result.success) {

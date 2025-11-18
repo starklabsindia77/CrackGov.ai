@@ -28,6 +28,9 @@ Welcome to the CrackGov.ai documentation. This directory contains all project do
 ### 📊 Project Status
 - **[MVP Missing Features](./status/mvp-missing-features.md)** - Missing MVP features analysis
 
+### 📊 Project Status
+- **[MVP Missing Features](./status/mvp-missing-features.md)** - Missing MVP features analysis
+
 ## 📖 Quick Links
 
 - **Main README**: [../README.md](../README.md) - Project overview and setup

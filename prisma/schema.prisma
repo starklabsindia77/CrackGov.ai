@@ -110,6 +110,7 @@ model AiProvider {
   keys     AiProviderKey[]
   primaryFeatures   AiFeatureConfig[] @relation("PrimaryProvider")
   secondaryFeatures AiFeatureConfig[] @relation("SecondaryProvider")
+  tertiaryFeatures  AiFeatureConfig[] @relation("TertiaryProvider")
 }
 
 model AiProviderKey {
@@ -137,6 +138,8 @@ model AiFeatureConfig {
   primaryProviderId String?
   secondaryProvider AiProvider? @relation("SecondaryProvider", fields: [secondaryProviderId], references: [id])
   secondaryProviderId String?
+  tertiaryProvider   AiProvider? @relation("TertiaryProvider", fields: [tertiaryProviderId], references: [id])
+  tertiaryProviderId String?
   settings      Json?       // per-feature config: maxTokens, temperature, etc.
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt

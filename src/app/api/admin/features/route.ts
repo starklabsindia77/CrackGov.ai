@@ -6,6 +6,7 @@ import { z } from "zod";
 const updateFeatureConfigSchema = z.object({
   primaryProviderId: z.string().optional().nullable(),
   secondaryProviderId: z.string().optional().nullable(),
+  tertiaryProviderId: z.string().optional().nullable(),
   settings: z.record(z.any()).optional(),
 });
 
@@ -24,6 +25,14 @@ export async function GET() {
           },
         },
         secondaryProvider: {
+          select: {
+            id: true,
+            name: true,
+            code: true,
+            status: true,
+          },
+        },
+        tertiaryProvider: {
           select: {
             id: true,
             name: true,
@@ -68,12 +77,14 @@ export async function POST(request: NextRequest) {
       update: {
         primaryProviderId: data.primaryProviderId || null,
         secondaryProviderId: data.secondaryProviderId || null,
+        tertiaryProviderId: data.tertiaryProviderId || null,
         settings: data.settings || {},
       },
       create: {
         featureCode,
         primaryProviderId: data.primaryProviderId || null,
         secondaryProviderId: data.secondaryProviderId || null,
+        tertiaryProviderId: data.tertiaryProviderId || null,
         settings: data.settings || {},
       },
       include: {
@@ -85,6 +96,13 @@ export async function POST(request: NextRequest) {
           },
         },
         secondaryProvider: {
+          select: {
+            id: true,
+            name: true,
+            code: true,
+          },
+        },
+        tertiaryProvider: {
           select: {
             id: true,
             name: true,

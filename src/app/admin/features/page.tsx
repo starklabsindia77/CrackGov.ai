@@ -20,6 +20,7 @@ interface FeatureConfig {
   featureCode: string;
   primaryProvider?: Provider;
   secondaryProvider?: Provider;
+  tertiaryProvider?: Provider;
   settings?: any;
 }
 
@@ -27,6 +28,7 @@ const FEATURES = [
   { code: "STUDY_PLAN", name: "Study Plan Generator" },
   { code: "MOCK_TEST", name: "Mock Test Generator" },
   { code: "DOUBT_CHAT", name: "Doubt Chat" },
+  { code: "NOTES_GENERATOR", name: "Notes Generator" },
 ];
 
 function FeatureConfigCard({
@@ -48,11 +50,15 @@ function FeatureConfigCard({
   const [secondaryId, setSecondaryId] = useState(
     config?.secondaryProvider?.id || ""
   );
+  const [tertiaryId, setTertiaryId] = useState(
+    config?.tertiaryProvider?.id || ""
+  );
 
   // Update state when config changes
   useEffect(() => {
     setPrimaryId(config?.primaryProvider?.id || "");
     setSecondaryId(config?.secondaryProvider?.id || "");
+    setTertiaryId(config?.tertiaryProvider?.id || "");
   }, [config]);
 
   return (
@@ -62,7 +68,7 @@ function FeatureConfigCard({
         <CardDescription>Feature Code: {feature.code}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-3">
           <div className="space-y-2">
             <Label htmlFor={`primary-${feature.code}`}>
               Primary Provider
@@ -92,7 +98,27 @@ function FeatureConfigCard({
             >
               <option value="">No secondary provider</option>
               {providers
-                .filter((p) => p.id !== primaryId)
+                .filter((p) => p.id !== primaryId && p.id !== tertiaryId)
+                .map((provider) => (
+                  <option key={provider.id} value={provider.id}>
+                    {provider.name} ({provider.code})
+                  </option>
+                ))}
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor={`tertiary-${feature.code}`}>
+              Tertiary Provider (Optional)
+            </Label>
+            <Select
+              id={`tertiary-${feature.code}`}
+              value={tertiaryId}
+              onChange={(e) => setTertiaryId(e.target.value)}
+            >
+              <option value="">No tertiary provider</option>
+              {providers
+                .filter((p) => p.id !== primaryId && p.id !== secondaryId)
                 .map((provider) => (
                   <option key={provider.id} value={provider.id}>
                     {provider.name} ({provider.code})
@@ -107,6 +133,7 @@ function FeatureConfigCard({
             onSave(feature.code, {
               primaryProviderId: primaryId || null,
               secondaryProviderId: secondaryId || null,
+              tertiaryProviderId: tertiaryId || null,
             })
           }
           disabled={saving}
@@ -128,6 +155,12 @@ function FeatureConfigCard({
               Secondary:{" "}
               {config.secondaryProvider
                 ? `${config.secondaryProvider.name} (${config.secondaryProvider.code})`
+                : "Not set"}
+            </p>
+            <p>
+              Tertiary:{" "}
+              {config.tertiaryProvider
+                ? `${config.tertiaryProvider.name} (${config.tertiaryProvider.code})`
                 : "Not set"}
             </p>
           </div>
@@ -213,7 +246,7 @@ export default function FeaturesPage() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Feature Configuration</h1>
           <p className="mt-2 text-gray-600">
-            Configure AI providers for each feature with primary and secondary
+            Configure AI providers for each feature with primary, secondary, and tertiary
             failover
           </p>
         </div>

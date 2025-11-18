@@ -6,6 +6,7 @@ import { z } from "zod";
 const updateFeatureConfigSchema = z.object({
   primaryProviderId: z.string().optional().nullable(),
   secondaryProviderId: z.string().optional().nullable(),
+  tertiaryProviderId: z.string().optional().nullable(),
   settings: z.record(z.any()).optional(),
 });
 
@@ -21,6 +22,7 @@ export async function GET(
       include: {
         primaryProvider: true,
         secondaryProvider: true,
+        tertiaryProvider: true,
       },
     });
 
@@ -59,6 +61,7 @@ export async function PATCH(
       data: {
         primaryProviderId: data.primaryProviderId ?? undefined,
         secondaryProviderId: data.secondaryProviderId ?? undefined,
+        tertiaryProviderId: data.tertiaryProviderId ?? undefined,
         settings: data.settings,
       },
       include: {
@@ -70,6 +73,13 @@ export async function PATCH(
           },
         },
         secondaryProvider: {
+          select: {
+            id: true,
+            name: true,
+            code: true,
+          },
+        },
+        tertiaryProvider: {
           select: {
             id: true,
             name: true,
