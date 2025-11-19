@@ -7,8 +7,21 @@ export interface RateLimitResult {
   retryAfter?: number;
 }
 
+// In-memory rate limiting fallback
+const memoryRateLimit = new Map<string, Array<number>>();
+
+function cleanupMemoryRateLimit(identifier: string, windowMs: number) {
+  const now = Date.now();
+  const windowStart = now - windowMs;
+  const timestamps = memoryRateLimit.get(identifier) || [];
+  const filtered = timestamps.filter((ts) => ts > windowStart);
+  memoryRateLimit.set(identifier, filtered);
+  return filtered;
+}
+
 /**
  * Redis-based distributed rate limiting using sliding window
+ * Falls back to in-memory rate limiting if Redis is unavailable
  */
 export async function rateLimit(
   identifier: string,
@@ -16,6 +29,26 @@ export async function rateLimit(
   windowMs: number
 ): Promise<RateLimitResult> {
   try {
+    if (!redis) {
+      // Use in-memory rate limiting
+      const timestamps = cleanupMemoryRateLimit(identifier, windowMs);
+      const count = timestamps.length;
+      const allowed = count < limit;
+      const now = Date.now();
+      
+      if (allowed) {
+        timestamps.push(now);
+        memoryRateLimit.set(identifier, timestamps);
+      }
+
+      return {
+        allowed,
+        remaining: Math.max(0, limit - count - 1),
+        reset: now + windowMs,
+        retryAfter: allowed ? undefined : Math.ceil(windowMs / 1000),
+      };
+    }
+
     if (!redis.isOpen) {
       await redis.connect();
     }

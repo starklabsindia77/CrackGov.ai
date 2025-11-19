@@ -1,5 +1,8 @@
 import redis from "./redis";
-import crypto from "crypto";
+import * as crypto from "crypto";
+
+// In-memory cache fallback for dev mode
+const memoryCache = new Map<string, { value: any; expires: number }>();
 
 /**
  * Cache utility with TTL support
@@ -10,6 +13,18 @@ export class Cache {
    */
   async get<T>(key: string): Promise<T | null> {
     try {
+      if (!redis) {
+        // Use in-memory cache
+        const cached = memoryCache.get(key);
+        if (cached && cached.expires > Date.now()) {
+          return cached.value as T;
+        }
+        if (cached) {
+          memoryCache.delete(key);
+        }
+        return null;
+      }
+
       if (!redis.isOpen) {
         await redis.connect();
       }
@@ -17,6 +32,11 @@ export class Cache {
       return value ? JSON.parse(value) : null;
     } catch (error) {
       console.error(`Cache get error for key ${key}:`, error);
+      // Fallback to memory cache
+      const cached = memoryCache.get(key);
+      if (cached && cached.expires > Date.now()) {
+        return cached.value as T;
+      }
       return null;
     }
   }
@@ -26,12 +46,26 @@ export class Cache {
    */
   async set(key: string, value: any, ttl: number = 3600): Promise<void> {
     try {
+      if (!redis) {
+        // Use in-memory cache
+        memoryCache.set(key, {
+          value,
+          expires: Date.now() + ttl * 1000,
+        });
+        return;
+      }
+
       if (!redis.isOpen) {
         await redis.connect();
       }
       await redis.setEx(key, ttl, JSON.stringify(value));
     } catch (error) {
       console.error(`Cache set error for key ${key}:`, error);
+      // Fallback to memory cache
+      memoryCache.set(key, {
+        value,
+        expires: Date.now() + ttl * 1000,
+      });
     }
   }
 
@@ -40,12 +74,18 @@ export class Cache {
    */
   async del(key: string): Promise<void> {
     try {
+      if (!redis) {
+        memoryCache.delete(key);
+        return;
+      }
+
       if (!redis.isOpen) {
         await redis.connect();
       }
       await redis.del(key);
     } catch (error) {
       console.error(`Cache del error for key ${key}:`, error);
+      memoryCache.delete(key);
     }
   }
 
@@ -54,6 +94,17 @@ export class Cache {
    */
   async invalidatePattern(pattern: string): Promise<void> {
     try {
+      if (!redis) {
+        // Simple pattern matching for memory cache
+        const regex = new RegExp(pattern.replace("*", ".*"));
+        for (const key of memoryCache.keys()) {
+          if (regex.test(key)) {
+            memoryCache.delete(key);
+          }
+        }
+        return;
+      }
+
       if (!redis.isOpen) {
         await redis.connect();
       }
@@ -71,6 +122,11 @@ export class Cache {
    */
   async exists(key: string): Promise<boolean> {
     try {
+      if (!redis) {
+        const cached = memoryCache.get(key);
+        return cached ? cached.expires > Date.now() : false;
+      }
+
       if (!redis.isOpen) {
         await redis.connect();
       }

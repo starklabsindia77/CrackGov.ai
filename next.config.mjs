@@ -26,10 +26,42 @@ const nextConfig = {
   // Output configuration for Docker
   output: 'standalone',
   
-  // Experimental features for better performance
-  experimental: {
-    // Enable server components
-    serverComponents: true,
+  // Webpack configuration to handle Node.js built-in modules
+  webpack: (config, { isServer, webpack }) => {
+    // Handle node: protocol imports
+    config.resolve.alias = {
+      ...config.resolve.alias,
+    };
+
+    // Externalize Node.js built-in modules for client-side and edge runtime
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        crypto: false,
+        fs: false,
+        net: false,
+        tls: false,
+        stream: false,
+        url: false,
+        zlib: false,
+        http: false,
+        https: false,
+        assert: false,
+        os: false,
+        path: false,
+        buffer: false,
+        util: false,
+      };
+    }
+
+    // Ignore node: protocol for webpack
+    config.plugins.push(
+      new webpack.NormalModuleReplacementPlugin(/^node:/, (resource) => {
+        resource.request = resource.request.replace(/^node:/, "");
+      })
+    );
+
+    return config;
   },
 };
 

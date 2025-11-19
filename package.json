@@ -14,6 +14,7 @@
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
     "seed": "tsx prisma/seed.ts",
+    "cleanup": "tsx prisma/cleanup-dummy-data.ts",
     "workers": "tsx scripts/start-workers.ts"
   },
   "prisma": {

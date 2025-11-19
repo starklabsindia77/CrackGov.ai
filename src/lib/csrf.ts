@@ -3,7 +3,7 @@
  * Generates and validates CSRF tokens
  */
 
-import crypto from "crypto";
+import * as crypto from "crypto";
 
 const CSRF_SECRET = process.env.CSRF_SECRET || process.env.NEXTAUTH_SECRET || "csrf-secret";
 

@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { authRateLimiter } from "@/lib/rate-limit-redis";
 import { sendVerificationEmail, sendWelcomeEmail } from "@/lib/email";
-import crypto from "crypto";
+import * as crypto from "crypto";
 import { z } from "zod";
 
 const registerSchema = z.object({

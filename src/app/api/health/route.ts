@@ -26,19 +26,26 @@ export async function GET() {
     health.status = "degraded";
   }
 
-  // Check Redis
-  try {
-    await redis.ping();
-    health.services.redis = "healthy";
-  } catch (error) {
-    health.services.redis = "unhealthy";
-    health.status = "degraded";
+  // Check Redis (optional in dev mode)
+  if (redis) {
+    try {
+      await redis.ping();
+      health.services.redis = "healthy";
+    } catch (error) {
+      health.services.redis = "unhealthy";
+      // Don't mark overall health as degraded if Redis is optional
+      if (process.env.NODE_ENV === "production") {
+        health.status = "degraded";
+      }
+    }
+  } else {
+    health.services.redis = "disabled";
   }
 
   // If any critical service is down, mark as unhealthy
   if (
     health.services.database === "unhealthy" ||
-    health.services.redis === "unhealthy"
+    (health.services.redis === "unhealthy" && process.env.NODE_ENV === "production")
   ) {
     health.status = "unhealthy";
   }

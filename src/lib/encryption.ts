@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import * as crypto from "crypto";
 
 // Use a fixed key for testing, random for production
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || 

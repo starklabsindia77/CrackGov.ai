@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
-import crypto from "crypto";
+import * as crypto from "crypto";
 import { getPaymentConfig } from "@/lib/payment-config";
 
 export async function POST(request: NextRequest) {

@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { apiRateLimiter, authRateLimiter } from "@/lib/rate-limit-redis";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -33,22 +32,8 @@ export async function middleware(request: NextRequest) {
     response.headers.set(key, value);
   });
 
-  // Apply rate limiting to API routes
-  if (pathname.startsWith("/api/")) {
-    // Stricter rate limiting for auth routes
-    if (pathname.startsWith("/api/auth/")) {
-      const rateLimitResponse = await authRateLimiter(request as any);
-      if (rateLimitResponse) {
-        return rateLimitResponse;
-      }
-    } else {
-      // Standard rate limiting for other API routes
-      const rateLimitResponse = await apiRateLimiter(request as any);
-      if (rateLimitResponse) {
-        return rateLimitResponse;
-      }
-    }
-  }
+  // Note: Rate limiting is handled in individual API routes
+  // Middleware runs on Edge runtime which doesn't support Node.js built-ins like Redis
 
   return response;
 }

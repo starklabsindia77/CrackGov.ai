@@ -1,22 +1,64 @@
 import { Queue, Worker, QueueEvents } from "bullmq";
 import IORedis from "ioredis";
 
-// Redis connection for BullMQ
-const connection = new IORedis(process.env.REDIS_URL || "redis://localhost:6379", {
-  maxRetriesPerRequest: null,
-  enableReadyCheck: false,
-});
+// Check if Redis is disabled
+// In production, Redis is always enabled unless explicitly disabled
+// In development, Redis is disabled only if REDIS_URL is not set
+const isRedisDisabled = process.env.DISABLE_REDIS === "true" || 
+  (process.env.NODE_ENV === "development" && !process.env.REDIS_URL);
 
-// Job queues
-export const aiQueue = new Queue("ai-processing", { connection });
-export const emailQueue = new Queue("email", { connection });
-export const leaderboardQueue = new Queue("leaderboard", { connection });
-export const notificationQueue = new Queue("notifications", { connection });
+const isProduction = process.env.NODE_ENV === "production";
+
+// Redis connection for BullMQ
+let connection: IORedis | null = null;
+if (!isRedisDisabled) {
+  const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
+  
+  connection = new IORedis(redisUrl, {
+    maxRetriesPerRequest: null,
+    enableReadyCheck: false,
+    lazyConnect: true,
+    retryStrategy: (times) => {
+      if (times > 10) {
+        if (isProduction) {
+          console.error("⚠️  Queue Redis connection failed after 10 retries in production");
+        }
+        return null; // Stop retrying
+      }
+      return Math.min(times * 100, 3000);
+    },
+  });
+  
+  connection.on("error", (err) => {
+    console.error("Queue Redis connection error:", err);
+    if (isProduction) {
+      console.error("⚠️  Queue Redis error in production. Background jobs may not work.");
+    }
+  });
+
+  connection.on("connect", () => {
+    if (isProduction) {
+      console.log("✅ Queue Redis Connected (Production)");
+    } else {
+      console.log("✅ Queue Redis Connected");
+    }
+  });
+} else {
+  if (isProduction) {
+    console.warn("⚠️  Queue Redis is disabled in production. Background jobs will not work.");
+  }
+}
+
+// Create queues only if Redis is available
+export const aiQueue = connection ? new Queue("ai-processing", { connection }) : null;
+export const emailQueue = connection ? new Queue("email", { connection }) : null;
+export const leaderboardQueue = connection ? new Queue("leaderboard", { connection }) : null;
+export const notificationQueue = connection ? new Queue("notifications", { connection }) : null;
 
 // Queue events for monitoring
-export const aiQueueEvents = new QueueEvents("ai-processing", { connection });
-export const emailQueueEvents = new QueueEvents("email", { connection });
-export const leaderboardQueueEvents = new QueueEvents("leaderboard", { connection });
+export const aiQueueEvents = connection ? new QueueEvents("ai-processing", { connection }) : null;
+export const emailQueueEvents = connection ? new QueueEvents("email", { connection }) : null;
+export const leaderboardQueueEvents = connection ? new QueueEvents("leaderboard", { connection }) : null;
 
 // Job types
 export interface AIJobData {
@@ -55,7 +97,7 @@ export interface NotificationJobData {
 
 // Helper function to add jobs with retry
 export async function addJob<T>(
-  queue: Queue,
+  queue: Queue | null,
   jobName: string,
   data: T,
   options?: {
@@ -65,6 +107,10 @@ export async function addJob<T>(
     delay?: number;
   }
 ) {
+  if (!queue) {
+    console.warn(`⚠️  Queue not available (Redis disabled). Job ${jobName} would be queued.`);
+    return null;
+  }
   return await queue.add(jobName, data, {
     attempts: options?.attempts || 3,
     backoff: options?.backoff || { type: "exponential", delay: 2000 },
