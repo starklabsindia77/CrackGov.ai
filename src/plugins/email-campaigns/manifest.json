@@ -1,0 +1,83 @@
+{
+    "name": "email-campaigns",
+    "version": "1.0.0",
+    "displayName": "Email Campaigns",
+    "description": "Email marketing with user segmentation and campaign analytics",
+    "author": "CrackGov.ai Team",
+    "license": "MIT",
+    "icon": "Mail",
+    "category": "integration",
+    "permissions": [
+        {
+            "permission": "email-campaigns:manage",
+            "description": "Manage email campaigns",
+            "scope": "admin"
+        }
+    ],
+    "routes": [
+        {
+            "method": "GET",
+            "path": "/api/email-campaigns",
+            "handler": "routes/list",
+            "auth": true,
+            "permissions": [
+                "email-campaigns:manage"
+            ]
+        },
+        {
+            "method": "POST",
+            "path": "/api/email-campaigns",
+            "handler": "routes/create",
+            "auth": true,
+            "permissions": [
+                "email-campaigns:manage"
+            ]
+        },
+        {
+            "method": "POST",
+            "path": "/api/email-campaigns/:id/send",
+            "handler": "routes/send",
+            "auth": true,
+            "permissions": [
+                "email-campaigns:manage"
+            ]
+        },
+        {
+            "method": "GET",
+            "path": "/api/email-campaigns/:id/stats",
+            "handler": "routes/stats",
+            "auth": true,
+            "permissions": [
+                "email-campaigns:manage"
+            ]
+        }
+    ],
+    "adminNavigation": [
+        {
+            "label": "Email Campaigns",
+            "href": "/admin/campaigns",
+            "icon": "Mail",
+            "order": 5
+        }
+    ],
+    "config": {
+        "defaults": {
+            "provider": "resend",
+            "batchSize": 100,
+            "enableTracking": true
+        }
+    },
+    "models": [
+        "EmailCampaign",
+        "CampaignRecipient",
+        "UserSegment",
+        "UserSegmentMembership"
+    ],
+    "jobs": [
+        {
+            "name": "send-campaign",
+            "handler": "jobs/send",
+            "queue": "email"
+        }
+    ]
+}

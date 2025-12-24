@@ -1,0 +1,76 @@
+{
+    "name": "flashcard",
+    "version": "1.0.0",
+    "displayName": "Flashcard System",
+    "description": "Spaced repetition flashcard system with AI-generated cards and progress tracking",
+    "author": "CrackGov.ai Team",
+    "license": "MIT",
+    "icon": "Layers",
+    "category": "core",
+    "dependencies": {
+        "core": ">=1.0.0"
+    },
+    "optionalPlugins": [
+        "study-plan"
+    ],
+    "permissions": [
+        {
+            "permission": "flashcard:create",
+            "description": "Create flashcards"
+        },
+        {
+            "permission": "flashcard:review",
+            "description": "Review flashcards"
+        },
+        {
+            "permission": "flashcard:manage",
+            "description": "Manage flashcards"
+        }
+    ],
+    "routes": [
+        {
+            "method": "POST",
+            "path": "/api/flashcards",
+            "handler": "routes/create",
+            "auth": true
+        },
+        {
+            "method": "GET",
+            "path": "/api/flashcards",
+            "handler": "routes/list",
+            "auth": true
+        },
+        {
+            "method": "GET",
+            "path": "/api/flashcards/due",
+            "handler": "routes/due",
+            "auth": true
+        },
+        {
+            "method": "POST",
+            "path": "/api/flashcards/:id/review",
+            "handler": "routes/review",
+            "auth": true
+        }
+    ],
+    "navigation": [
+        {
+            "label": "Flashcards",
+            "href": "/app/flashcards",
+            "icon": "Layers",
+            "order": 4
+        }
+    ],
+    "config": {
+        "defaults": {
+            "spacedRepetitionAlgorithm": "sm2",
+            "maxCardsPerDay": 50,
+            "enableAIGeneration": true,
+            "defaultDifficulty": 0
+        }
+    },
+    "models": [
+        "Flashcard",
+        "FlashcardReview"
+    ]
+}

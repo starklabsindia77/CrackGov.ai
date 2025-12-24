@@ -1,0 +1,54 @@
+{
+    "name": "study-reminders",
+    "version": "1.0.0",
+    "displayName": "Study Reminders",
+    "description": "Schedule and manage study reminders with multi-channel delivery",
+    "author": "CrackGov.ai Team",
+    "license": "MIT",
+    "icon": "Clock",
+    "category": "core",
+    "routes": [
+        {
+            "method": "GET",
+            "path": "/api/study-reminders",
+            "handler": "routes/list",
+            "auth": true
+        },
+        {
+            "method": "POST",
+            "path": "/api/study-reminders",
+            "handler": "routes/create",
+            "auth": true
+        },
+        {
+            "method": "PUT",
+            "path": "/api/study-reminders/:id",
+            "handler": "routes/update",
+            "auth": true
+        },
+        {
+            "method": "DELETE",
+            "path": "/api/study-reminders/:id",
+            "handler": "routes/delete",
+            "auth": true
+        }
+    ],
+    "config": {
+        "defaults": {
+            "enableEmail": true,
+            "enablePush": true,
+            "defaultReminderTime": "09:00"
+        }
+    },
+    "models": [
+        "StudyReminder"
+    ],
+    "jobs": [
+        {
+            "name": "send-reminders",
+            "handler": "jobs/send",
+            "schedule": "0 * * * *",
+            "queue": "notifications"
+        }
+    ]
+}

@@ -1,13 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { AdminLayout } from "@/components/layout/admin-layout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
-import { Users, Search, Edit, Trash2, Eye } from "lucide-react";
-import { toast } from "sonner";
+import {
+  Users as UsersIcon,
+  Search,
+  Edit,
+  Trash2,
+  ChevronLeft,
+  ChevronRight,
+  Mail,
+  Shield,
+  CheckCircle,
+  XCircle,
+} from "lucide-react";
 
 interface User {
   id: string;
@@ -18,7 +23,7 @@ interface User {
   emailVerified: boolean;
   onboardingCompleted: boolean;
   createdAt: string;
-  _count: {
+  _count?: {
     tests: number;
     attempts: number;
     studyPlans: number;
@@ -59,7 +64,6 @@ export default function UsersPage() {
       }
     } catch (error) {
       console.error("Error fetching users:", error);
-      toast.error("Failed to load users");
     } finally {
       setLoading(false);
     }
@@ -74,14 +78,14 @@ export default function UsersPage() {
       });
 
       if (res.ok) {
-        toast.success("User deleted successfully");
+        alert("User deleted successfully");
         fetchUsers();
       } else {
         const data = await res.json();
-        toast.error(data.error || "Failed to delete user");
+        alert(data.error || "Failed to delete user");
       }
     } catch (error) {
-      toast.error("Failed to delete user");
+      alert("Failed to delete user");
     }
   };
 
@@ -105,265 +109,360 @@ export default function UsersPage() {
       });
 
       if (res.ok) {
-        toast.success("User updated successfully");
+        alert("User updated successfully");
         setShowEdit(false);
         setSelectedUser(null);
         fetchUsers();
       } else {
         const error = await res.json();
-        toast.error(error.error || "Failed to update user");
+        alert(error.error || "Failed to update user");
       }
     } catch (error) {
-      toast.error("Failed to update user");
+      alert("Failed to update user");
     }
   };
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-            User Management
-          </h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">
-            Manage users, roles, and subscriptions
-          </p>
+    <div className="space-y-6">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-slate-600">Total Users</p>
+              <p className="text-3xl font-bold text-slate-900 mt-2">{users.length}</p>
+            </div>
+            <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+              <UsersIcon className="h-6 w-6 text-white" />
+            </div>
+          </div>
         </div>
 
-        {/* Filters */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="grid gap-4 md:grid-cols-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search users..."
-                  value={search}
-                  onChange={(e) => {
-                    setSearch(e.target.value);
-                    setPage(1);
-                  }}
-                  className="pl-10"
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-slate-600">Verified</p>
+              <p className="text-3xl font-bold text-slate-900 mt-2">
+                {users.filter((u) => u.emailVerified).length}
+              </p>
+            </div>
+            <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
+              <CheckCircle className="h-6 w-6 text-white" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-slate-600">Pro Users</p>
+              <p className="text-3xl font-bold text-slate-900 mt-2">
+                {users.filter((u) => u.subscriptionStatus === "pro").length}
+              </p>
+            </div>
+            <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
+              <Shield className="h-6 w-6 text-white" />
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-slate-600">Admins</p>
+              <p className="text-3xl font-bold text-slate-900 mt-2">
+                {users.filter((u) => u.role === "admin").length}
+              </p>
+            </div>
+            <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center">
+              <Shield className="h-6 w-6 text-white" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search users..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          <select
+            value={roleFilter}
+            onChange={(e) => {
+              setRoleFilter(e.target.value);
+              setPage(1);
+            }}
+            className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="">All Roles</option>
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </select>
+          <select
+            value={subscriptionFilter}
+            onChange={(e) => {
+              setSubscriptionFilter(e.target.value);
+              setPage(1);
+            }}
+            className="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="">All Subscriptions</option>
+            <option value="free">Free</option>
+            <option value="pro">Pro</option>
+            <option value="topper">Topper</option>
+          </select>
+          <button
+            onClick={() => fetchUsers()}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          >
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      {/* Users Table */}
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200">
+        <div className="p-6 border-b border-slate-200">
+          <h3 className="text-lg font-semibold text-slate-900">Users</h3>
+          <p className="text-sm text-slate-500 mt-1">
+            {users.length} user{users.length !== 1 ? "s" : ""} found
+          </p>
+        </div>
+        <div className="p-6">
+          {loading ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            </div>
+          ) : users.length === 0 ? (
+            <div className="text-center py-8 text-slate-500">No users found</div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-slate-200">
+                    <th className="text-left p-3 text-sm font-semibold text-slate-700">
+                      Email
+                    </th>
+                    <th className="text-left p-3 text-sm font-semibold text-slate-700">
+                      Name
+                    </th>
+                    <th className="text-left p-3 text-sm font-semibold text-slate-700">
+                      Role
+                    </th>
+                    <th className="text-left p-3 text-sm font-semibold text-slate-700">
+                      Subscription
+                    </th>
+                    <th className="text-left p-3 text-sm font-semibold text-slate-700">
+                      Status
+                    </th>
+                    <th className="text-left p-3 text-sm font-semibold text-slate-700">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((user) => (
+                    <tr key={user.id} className="border-b border-slate-100 hover:bg-slate-50">
+                      <td className="p-3">
+                        <div>
+                          <p className="font-medium text-slate-900">{user.email}</p>
+                          <div className="flex gap-2 text-xs text-slate-500 mt-1">
+                            {user.emailVerified && (
+                              <span className="text-green-600 flex items-center gap-1">
+                                <CheckCircle className="h-3 w-3" />
+                                Verified
+                              </span>
+                            )}
+                            {user.onboardingCompleted && <span>Onboarded</span>}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-3 text-slate-700">{user.name || "-"}</td>
+                      <td className="p-3">
+                        <span
+                          className={`text-xs px-2 py-1 rounded-full font-medium ${user.role === "admin"
+                              ? "bg-purple-100 text-purple-800"
+                              : "bg-slate-100 text-slate-800"
+                            }`}
+                        >
+                          {user.role}
+                        </span>
+                      </td>
+                      <td className="p-3">
+                        <span
+                          className={`text-xs px-2 py-1 rounded-full font-medium ${user.subscriptionStatus === "pro"
+                              ? "bg-blue-100 text-blue-800"
+                              : user.subscriptionStatus === "topper"
+                                ? "bg-green-100 text-green-800"
+                                : "bg-slate-100 text-slate-800"
+                            }`}
+                        >
+                          {user.subscriptionStatus}
+                        </span>
+                      </td>
+                      <td className="p-3 text-sm text-slate-600">
+                        {user._count ? (
+                          <div>
+                            {user._count.tests} tests, {user._count.attempts} attempts
+                          </div>
+                        ) : (
+                          "-"
+                        )}
+                      </td>
+                      <td className="p-3">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setShowEdit(true);
+                            }}
+                            className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+                          >
+                            <Edit className="h-4 w-4 text-slate-600" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(user.id)}
+                            className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                          >
+                            <Trash2 className="h-4 w-4 text-red-600" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-between items-center mt-6 pt-6 border-t border-slate-200">
+              <button
+                disabled={page === 1}
+                onClick={() => setPage(page - 1)}
+                className="flex items-center space-x-2 px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeft className="h-4 w-4" />
+                <span>Previous</span>
+              </button>
+              <span className="text-sm text-slate-600">
+                Page {page} of {totalPages}
+              </span>
+              <button
+                disabled={page === totalPages}
+                onClick={() => setPage(page + 1)}
+                className="flex items-center space-x-2 px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <span>Next</span>
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Edit Modal */}
+      {showEdit && selectedUser && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full">
+            <div className="p-6 border-b border-slate-200">
+              <h3 className="text-lg font-semibold text-slate-900">Edit User</h3>
+            </div>
+            <form onSubmit={handleUpdate} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  value={selectedUser.email}
+                  disabled
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg bg-slate-50 text-slate-500"
                 />
               </div>
-              <Select
-                value={roleFilter}
-                onChange={(e) => {
-                  setRoleFilter(e.target.value);
-                  setPage(1);
-                }}
-              >
-                <option value="">All Roles</option>
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-              </Select>
-              <Select
-                value={subscriptionFilter}
-                onChange={(e) => {
-                  setSubscriptionFilter(e.target.value);
-                  setPage(1);
-                }}
-              >
-                <option value="">All Subscriptions</option>
-                <option value="free">Free</option>
-                <option value="pro">Pro</option>
-              </Select>
-              <Button onClick={() => fetchUsers()}>Refresh</Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Users Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Users</CardTitle>
-            <CardDescription>
-              {users.length} user{users.length !== 1 ? "s" : ""} found
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <div className="text-center py-8">Loading...</div>
-            ) : users.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                No users found
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Name
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  defaultValue={selectedUser.name || ""}
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
               </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left p-2">Email</th>
-                      <th className="text-left p-2">Name</th>
-                      <th className="text-left p-2">Role</th>
-                      <th className="text-left p-2">Subscription</th>
-                      <th className="text-left p-2">Activity</th>
-                      <th className="text-left p-2">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {users.map((user) => (
-                      <tr key={user.id} className="border-b">
-                        <td className="p-2">
-                          <div>
-                            <p className="font-medium">{user.email}</p>
-                            <div className="flex gap-2 text-xs text-muted-foreground">
-                              {user.emailVerified && (
-                                <span className="text-green-600">Verified</span>
-                              )}
-                              {user.onboardingCompleted && (
-                                <span>Onboarded</span>
-                              )}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="p-2">{user.name || "-"}</td>
-                        <td className="p-2">
-                          <span
-                            className={`text-xs px-2 py-1 rounded ${
-                              user.role === "admin"
-                                ? "bg-purple-100 text-purple-800"
-                                : "bg-gray-100 text-gray-800"
-                            }`}
-                          >
-                            {user.role}
-                          </span>
-                        </td>
-                        <td className="p-2">
-                          <span
-                            className={`text-xs px-2 py-1 rounded ${
-                              user.subscriptionStatus === "pro"
-                                ? "bg-primary/10 text-primary"
-                                : "bg-gray-100 text-gray-800"
-                            }`}
-                          >
-                            {user.subscriptionStatus}
-                          </span>
-                        </td>
-                        <td className="p-2 text-sm text-muted-foreground">
-                          {user._count.tests} tests, {user._count.attempts} attempts
-                        </td>
-                        <td className="p-2">
-                          <div className="flex gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => {
-                                setSelectedUser(user);
-                                setShowEdit(true);
-                              }}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDelete(user.id)}
-                            >
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex justify-between items-center mt-4">
-                <Button
-                  variant="outline"
-                  disabled={page === 1}
-                  onClick={() => setPage(page - 1)}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Role
+                </label>
+                <select
+                  name="role"
+                  defaultValue={selectedUser.role}
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  Previous
-                </Button>
-                <span className="text-sm text-muted-foreground">
-                  Page {page} of {totalPages}
-                </span>
-                <Button
-                  variant="outline"
-                  disabled={page === totalPages}
-                  onClick={() => setPage(page + 1)}
-                >
-                  Next
-                </Button>
+                  <option value="user">User</option>
+                  <option value="admin">Admin</option>
+                </select>
               </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Edit Modal */}
-        {showEdit && selectedUser && (
-          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <Card className="max-w-md w-full">
-              <CardHeader>
-                <CardTitle>Edit User</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleUpdate} className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium">Email</label>
-                    <Input value={selectedUser.email} disabled />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">Name</label>
-                    <Input
-                      name="name"
-                      defaultValue={selectedUser.name || ""}
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">Role</label>
-                    <Select name="role" defaultValue={selectedUser.role}>
-                      <option value="user">User</option>
-                      <option value="admin">Admin</option>
-                    </Select>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">Subscription</label>
-                    <Select
-                      name="subscriptionStatus"
-                      defaultValue={selectedUser.subscriptionStatus}
-                    >
-                      <option value="free">Free</option>
-                      <option value="pro">Pro</option>
-                    </Select>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      name="emailVerified"
-                      defaultChecked={selectedUser.emailVerified}
-                      className="rounded"
-                    />
-                    <label className="text-sm font-medium">Email Verified</label>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button type="submit" className="flex-1">
-                      Save
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => {
-                        setShowEdit(false);
-                        setSelectedUser(null);
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Subscription
+                </label>
+                <select
+                  name="subscriptionStatus"
+                  defaultValue={selectedUser.subscriptionStatus}
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="free">Free</option>
+                  <option value="pro">Pro</option>
+                  <option value="topper">Topper</option>
+                </select>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  name="emailVerified"
+                  defaultChecked={selectedUser.emailVerified}
+                  className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                />
+                <label className="text-sm font-medium text-slate-700">
+                  Email Verified
+                </label>
+              </div>
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="submit"
+                  className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                >
+                  Save Changes
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowEdit(false);
+                    setSelectedUser(null);
+                  }}
+                  className="flex-1 bg-slate-100 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-200 transition-colors font-medium"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
           </div>
-        )}
-      </div>
-    </AdminLayout>
+        </div>
+      )}
+    </div>
   );
 }
-

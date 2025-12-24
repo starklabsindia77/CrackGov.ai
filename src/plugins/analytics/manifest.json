@@ -1,0 +1,51 @@
+{
+    "name": "analytics",
+    "version": "1.0.0",
+    "displayName": "Analytics & Tracking",
+    "description": "User behavior analytics and feature usage tracking",
+    "author": "CrackGov.ai Team",
+    "license": "MIT",
+    "icon": "BarChart",
+    "category": "analytics",
+    "routes": [
+        {
+            "method": "POST",
+            "path": "/api/analytics/track",
+            "handler": "routes/track",
+            "auth": true
+        },
+        {
+            "method": "GET",
+            "path": "/api/analytics/dashboard",
+            "handler": "routes/dashboard",
+            "auth": true,
+            "permissions": [
+                "analytics:view"
+            ]
+        },
+        {
+            "method": "GET",
+            "path": "/api/analytics/user/:userId",
+            "handler": "routes/userAnalytics",
+            "auth": true,
+            "permissions": [
+                "analytics:view"
+            ]
+        }
+    ],
+    "adminNavigation": [
+        {
+            "label": "Analytics",
+            "href": "/admin/analytics",
+            "icon": "BarChart",
+            "order": 2
+        }
+    ],
+    "config": {
+        "defaults": {
+            "enableTracking": true,
+            "sampleRate": 1.0,
+            "enableHeatmaps": false
+        }
+    }
+}

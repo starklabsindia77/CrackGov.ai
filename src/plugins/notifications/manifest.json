@@ -1,0 +1,63 @@
+{
+    "name": "notifications",
+    "version": "1.0.0",
+    "displayName": "Notification System",
+    "description": "Real-time notification system with multiple channels and preferences",
+    "author": "CrackGov.ai Team",
+    "license": "MIT",
+    "icon": "Bell",
+    "category": "core",
+    "permissions": [
+        {
+            "permission": "notifications:view",
+            "description": "View notifications"
+        },
+        {
+            "permission": "notifications:manage",
+            "description": "Manage notification preferences"
+        }
+    ],
+    "routes": [
+        {
+            "method": "GET",
+            "path": "/api/notifications",
+            "handler": "routes/list",
+            "auth": true
+        },
+        {
+            "method": "PUT",
+            "path": "/api/notifications/:id/read",
+            "handler": "routes/markRead",
+            "auth": true
+        },
+        {
+            "method": "PUT",
+            "path": "/api/notifications/read-all",
+            "handler": "routes/markAllRead",
+            "auth": true
+        },
+        {
+            "method": "GET",
+            "path": "/api/notifications/preferences",
+            "handler": "routes/getPreferences",
+            "auth": true
+        },
+        {
+            "method": "PUT",
+            "path": "/api/notifications/preferences",
+            "handler": "routes/updatePreferences",
+            "auth": true
+        }
+    ],
+    "config": {
+        "defaults": {
+            "enablePush": true,
+            "enableEmail": true,
+            "enableInApp": true,
+            "maxNotifications": 100
+        }
+    },
+    "models": [
+        "Notification"
+    ]
+}

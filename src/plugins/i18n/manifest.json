@@ -1,0 +1,36 @@
+{
+    "name": "i18n",
+    "version": "1.0.0",
+    "displayName": "Internationalization",
+    "description": "Multi-language support with dynamic translation loading",
+    "author": "CrackGov.ai Team",
+    "license": "MIT",
+    "icon": "Globe",
+    "category": "core",
+    "routes": [
+        {
+            "method": "GET",
+            "path": "/api/i18n/translations/:locale",
+            "handler": "routes/getTranslations"
+        },
+        {
+            "method": "PUT",
+            "path": "/api/i18n/locale",
+            "handler": "routes/setLocale",
+            "auth": true
+        }
+    ],
+    "config": {
+        "defaults": {
+            "defaultLocale": "en",
+            "supportedLocales": [
+                "en",
+                "hi",
+                "mr",
+                "ta",
+                "te"
+            ],
+            "fallbackLocale": "en"
+        }
+    }
+}

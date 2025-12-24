@@ -1,0 +1,46 @@
+{
+    "name": "payment-gateway",
+    "version": "1.0.0",
+    "displayName": "Payment Gateway",
+    "description": "Payment processing with Razorpay integration and subscription management",
+    "author": "CrackGov.ai Team",
+    "license": "MIT",
+    "icon": "CreditCard",
+    "category": "integration",
+    "permissions": [
+        {
+            "permission": "payment:manage",
+            "description": "Manage payment configuration",
+            "scope": "admin"
+        }
+    ],
+    "routes": [
+        {
+            "method": "POST",
+            "path": "/api/payment/create-order",
+            "handler": "routes/createOrder",
+            "auth": true
+        },
+        {
+            "method": "POST",
+            "path": "/api/payment/verify",
+            "handler": "routes/verify",
+            "auth": true
+        },
+        {
+            "method": "POST",
+            "path": "/api/payment/webhook",
+            "handler": "routes/webhook"
+        }
+    ],
+    "config": {
+        "defaults": {
+            "provider": "razorpay",
+            "currency": "INR",
+            "enableWebhooks": true
+        }
+    },
+    "models": [
+        "PaymentConfig"
+    ]
+}

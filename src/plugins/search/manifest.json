@@ -1,0 +1,31 @@
+{
+    "name": "search",
+    "version": "1.0.0",
+    "displayName": "Full-Text Search",
+    "description": "Advanced search across all content with filters and suggestions",
+    "author": "CrackGov.ai Team",
+    "license": "MIT",
+    "icon": "Search",
+    "category": "core",
+    "routes": [
+        {
+            "method": "GET",
+            "path": "/api/search",
+            "handler": "routes/search",
+            "auth": true
+        },
+        {
+            "method": "GET",
+            "path": "/api/search/suggestions",
+            "handler": "routes/suggestions",
+            "auth": true
+        }
+    ],
+    "config": {
+        "defaults": {
+            "enableFuzzySearch": true,
+            "maxResults": 50,
+            "enableHighlighting": true
+        }
+    }
+}

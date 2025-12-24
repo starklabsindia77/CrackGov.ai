@@ -799,3 +799,49 @@ model ExamAttempt {
   @@index([completedAt])
 }
 
+// Plugin System Models
+model Plugin {
+  id          String   @id @default(cuid())
+  name        String   @unique // Plugin identifier (kebab-case)
+  version     String   // Semantic version
+  enabled     Boolean  @default(false)
+  installed   Boolean  @default(false)
+  config      Json?    // Plugin-specific configuration
+  dependencies String[] // Array of required plugin names
+  priority    Int      @default(0) // Load order priority
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([enabled])
+  @@index([installed])
+  @@index([name, enabled])
+}
+
+model PluginRoute {
+  id          String   @id @default(cuid())
+  pluginName  String   // Plugin that owns this route
+  method      String   // HTTP method (GET, POST, PUT, DELETE, etc.)
+  path        String   // Route path (e.g., /api/study-plan/generate)
+  handler     String   // Handler function reference
+  middleware  String[] // Middleware to apply
+  enabled     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@unique([pluginName, method, path])
+  @@index([pluginName])
+  @@index([enabled])
+  @@index([path])
+}
+
+model PluginPermission {
+  id          String   @id @default(cuid())
+  pluginName  String   // Plugin that defines this permission
+  permission  String   // Permission identifier (e.g., "study-plan:create")
+  description String?  // Human-readable description
+  createdAt   DateTime @default(now())
+
+  @@unique([pluginName, permission])
+  @@index([pluginName])
+  @@index([permission])
+}
+

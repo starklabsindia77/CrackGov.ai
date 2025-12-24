@@ -1,0 +1,26 @@
+{
+    "name": "image-optimization",
+    "version": "1.0.0",
+    "displayName": "Image Optimization",
+    "description": "Automatic image compression and format conversion",
+    "author": "CrackGov.ai Team",
+    "license": "MIT",
+    "icon": "Image",
+    "category": "integration",
+    "routes": [
+        {
+            "method": "POST",
+            "path": "/api/images/optimize",
+            "handler": "routes/optimize",
+            "auth": true
+        }
+    ],
+    "config": {
+        "defaults": {
+            "quality": 80,
+            "maxWidth": 1920,
+            "maxHeight": 1080,
+            "format": "webp"
+        }
+    }
+}

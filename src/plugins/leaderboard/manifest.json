@@ -1,0 +1,52 @@
+{
+    "name": "leaderboard",
+    "version": "1.0.0",
+    "displayName": "Leaderboard & Rankings",
+    "description": "Competitive leaderboards with daily, weekly, and monthly rankings",
+    "author": "CrackGov.ai Team",
+    "license": "MIT",
+    "icon": "Trophy",
+    "category": "analytics",
+    "permissions": [
+        {
+            "permission": "leaderboard:view",
+            "description": "View leaderboards"
+        }
+    ],
+    "routes": [
+        {
+            "method": "GET",
+            "path": "/api/leaderboard",
+            "handler": "routes/get",
+            "auth": true
+        }
+    ],
+    "navigation": [
+        {
+            "label": "Leaderboard",
+            "href": "/app/leaderboard",
+            "icon": "Trophy",
+            "order": 10
+        }
+    ],
+    "config": {
+        "defaults": {
+            "enableDaily": true,
+            "enableWeekly": true,
+            "enableMonthly": true,
+            "topUsersCount": 100,
+            "updateFrequency": 300
+        }
+    },
+    "models": [
+        "LeaderboardEntry"
+    ],
+    "jobs": [
+        {
+            "name": "update-leaderboard",
+            "handler": "jobs/update",
+            "schedule": "*/5 * * * *",
+            "queue": "leaderboard"
+        }
+    ]
+}

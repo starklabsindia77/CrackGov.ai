@@ -1,0 +1,37 @@
+{
+    "name": "pdf-export",
+    "version": "1.0.0",
+    "displayName": "PDF Export",
+    "description": "Export study plans, test results, and reports as PDF",
+    "author": "CrackGov.ai Team",
+    "license": "MIT",
+    "icon": "FileDown",
+    "category": "integration",
+    "routes": [
+        {
+            "method": "POST",
+            "path": "/api/pdf/study-plan/:id",
+            "handler": "routes/studyPlan",
+            "auth": true
+        },
+        {
+            "method": "POST",
+            "path": "/api/pdf/test-result/:id",
+            "handler": "routes/testResult",
+            "auth": true
+        },
+        {
+            "method": "POST",
+            "path": "/api/pdf/report",
+            "handler": "routes/report",
+            "auth": true
+        }
+    ],
+    "config": {
+        "defaults": {
+            "format": "A4",
+            "orientation": "portrait",
+            "includeBranding": true
+        }
+    }
+}

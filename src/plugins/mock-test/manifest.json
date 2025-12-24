@@ -1,0 +1,95 @@
+{
+    "name": "mock-test",
+    "version": "1.0.0",
+    "displayName": "Mock Test Generator",
+    "description": "AI-powered mock test generation with 20 questions, automatic scoring, and topic-wise analysis",
+    "author": "CrackGov.ai Team",
+    "license": "MIT",
+    "icon": "FileText",
+    "category": "assessment",
+    "dependencies": {
+        "core": ">=1.0.0"
+    },
+    "requiredPlugins": [],
+    "optionalPlugins": [
+        "question-bank",
+        "study-plan"
+    ],
+    "permissions": [
+        {
+            "permission": "mock-test:create",
+            "description": "Generate mock tests"
+        },
+        {
+            "permission": "mock-test:attempt",
+            "description": "Attempt mock tests"
+        },
+        {
+            "permission": "mock-test:view",
+            "description": "View test results"
+        }
+    ],
+    "routes": [
+        {
+            "method": "POST",
+            "path": "/api/tests/generate",
+            "handler": "routes/generate",
+            "auth": true,
+            "permissions": [
+                "mock-test:create"
+            ]
+        },
+        {
+            "method": "GET",
+            "path": "/api/tests/:testId",
+            "handler": "routes/get",
+            "auth": true,
+            "permissions": [
+                "mock-test:view"
+            ]
+        },
+        {
+            "method": "POST",
+            "path": "/api/tests/:testId/submit",
+            "handler": "routes/submit",
+            "auth": true,
+            "permissions": [
+                "mock-test:attempt"
+            ]
+        },
+        {
+            "method": "GET",
+            "path": "/api/test-attempts",
+            "handler": "routes/attempts",
+            "auth": true,
+            "permissions": [
+                "mock-test:view"
+            ]
+        }
+    ],
+    "navigation": [
+        {
+            "label": "Mock Tests",
+            "href": "/app/tests",
+            "icon": "FileText",
+            "order": 2
+        }
+    ],
+    "config": {
+        "schema": "config.schema.ts",
+        "defaults": {
+            "defaultQuestions": 20,
+            "timeLimit": 60,
+            "allowRetake": true,
+            "showAnswersAfterSubmit": true,
+            "aiProvider": "primary",
+            "cacheQuestions": true,
+            "cacheTTL": 7200
+        }
+    },
+    "models": [
+        "Test",
+        "TestQuestion",
+        "TestAttempt"
+    ]
+}

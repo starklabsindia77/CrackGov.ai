@@ -1,0 +1,43 @@
+{
+    "name": "study-streaks",
+    "version": "1.0.0",
+    "displayName": "Study Streaks",
+    "description": "Track daily study activity and maintain learning streaks",
+    "author": "CrackGov.ai Team",
+    "license": "MIT",
+    "icon": "Flame",
+    "category": "analytics",
+    "routes": [
+        {
+            "method": "GET",
+            "path": "/api/study-streaks",
+            "handler": "routes/get",
+            "auth": true
+        },
+        {
+            "method": "POST",
+            "path": "/api/study-streaks/log",
+            "handler": "routes/log",
+            "auth": true
+        }
+    ],
+    "navigation": [
+        {
+            "label": "My Streak",
+            "href": "/app/streak",
+            "icon": "Flame",
+            "order": 9
+        }
+    ],
+    "config": {
+        "defaults": {
+            "trackTests": true,
+            "trackStudyPlans": true,
+            "trackDoubts": true,
+            "minActivityMinutes": 15
+        }
+    },
+    "models": [
+        "StudyStreak"
+    ]
+}

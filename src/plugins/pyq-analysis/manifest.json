@@ -1,0 +1,49 @@
+{
+    "name": "pyq-analysis",
+    "version": "1.0.0",
+    "displayName": "PYQ Analysis",
+    "description": "Previous Year Questions analysis with AI-powered insights and recommendations",
+    "author": "CrackGov.ai Team",
+    "license": "MIT",
+    "icon": "TrendingUp",
+    "category": "analytics",
+    "routes": [
+        {
+            "method": "POST",
+            "path": "/api/pyq-analysis/generate",
+            "handler": "routes/generate",
+            "auth": true
+        },
+        {
+            "method": "GET",
+            "path": "/api/pyq-analysis",
+            "handler": "routes/list",
+            "auth": true
+        },
+        {
+            "method": "GET",
+            "path": "/api/pyq-analysis/:id",
+            "handler": "routes/get",
+            "auth": true
+        }
+    ],
+    "navigation": [
+        {
+            "label": "PYQ Analysis",
+            "href": "/app/pyq-analysis",
+            "icon": "TrendingUp",
+            "order": 8
+        }
+    ],
+    "config": {
+        "defaults": {
+            "aiProvider": "primary",
+            "minQuestionsForAnalysis": 10,
+            "enableRecommendations": true
+        }
+    },
+    "models": [
+        "PyqAnalysis",
+        "PreviousYearQuestion"
+    ]
+}

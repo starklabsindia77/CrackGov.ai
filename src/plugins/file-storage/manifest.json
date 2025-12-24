@@ -1,0 +1,46 @@
+{
+    "name": "file-storage",
+    "version": "1.0.0",
+    "displayName": "File Storage",
+    "description": "File upload and storage with AWS S3 and Cloudflare R2 support",
+    "author": "CrackGov.ai Team",
+    "license": "MIT",
+    "icon": "HardDrive",
+    "category": "integration",
+    "permissions": [
+        {
+            "permission": "storage:upload",
+            "description": "Upload files"
+        }
+    ],
+    "routes": [
+        {
+            "method": "POST",
+            "path": "/api/storage/upload",
+            "handler": "routes/upload",
+            "auth": true
+        },
+        {
+            "method": "GET",
+            "path": "/api/storage/presigned-url",
+            "handler": "routes/presignedUrl",
+            "auth": true
+        },
+        {
+            "method": "DELETE",
+            "path": "/api/storage/:key",
+            "handler": "routes/delete",
+            "auth": true
+        }
+    ],
+    "config": {
+        "defaults": {
+            "provider": "s3",
+            "maxFileSize": 10485760,
+            "allowedTypes": [
+                "image/*",
+                "application/pdf"
+            ]
+        }
+    }
+}

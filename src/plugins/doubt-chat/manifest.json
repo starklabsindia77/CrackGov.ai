@@ -1,0 +1,63 @@
+{
+    "name": "doubt-chat",
+    "version": "1.0.0",
+    "displayName": "AI Doubt Resolution",
+    "description": "AI-powered doubt resolution with step-by-step explanations and subject-specific tutoring",
+    "author": "CrackGov.ai Team",
+    "license": "MIT",
+    "icon": "MessageCircle",
+    "category": "ai",
+    "dependencies": {
+        "core": ">=1.0.0"
+    },
+    "permissions": [
+        {
+            "permission": "doubt-chat:ask",
+            "description": "Ask doubts"
+        },
+        {
+            "permission": "doubt-chat:view",
+            "description": "View doubt history"
+        }
+    ],
+    "routes": [
+        {
+            "method": "POST",
+            "path": "/api/ai/doubt",
+            "handler": "routes/ask",
+            "auth": true,
+            "permissions": [
+                "doubt-chat:ask"
+            ],
+            "rateLimit": {
+                "requests": 10,
+                "window": 60000
+            }
+        },
+        {
+            "method": "GET",
+            "path": "/api/doubts/history",
+            "handler": "routes/history",
+            "auth": true,
+            "permissions": [
+                "doubt-chat:view"
+            ]
+        }
+    ],
+    "navigation": [
+        {
+            "label": "Ask Doubt",
+            "href": "/app/doubts",
+            "icon": "MessageCircle",
+            "order": 3
+        }
+    ],
+    "config": {
+        "defaults": {
+            "aiProvider": "primary",
+            "maxHistoryItems": 50,
+            "enableVoiceInput": false,
+            "saveHistory": true
+        }
+    }
+}

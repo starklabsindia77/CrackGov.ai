@@ -1,0 +1,63 @@
+{
+    "name": "exam-generator",
+    "version": "1.0.0",
+    "displayName": "AI Exam Generator",
+    "description": "Generate full-length exams based on templates with real-time exam sessions",
+    "author": "CrackGov.ai Team",
+    "license": "MIT",
+    "icon": "GraduationCap",
+    "category": "assessment",
+    "routes": [
+        {
+            "method": "POST",
+            "path": "/api/exams/generate",
+            "handler": "routes/generate",
+            "auth": true
+        },
+        {
+            "method": "GET",
+            "path": "/api/exams/:id",
+            "handler": "routes/get",
+            "auth": true
+        },
+        {
+            "method": "POST",
+            "path": "/api/exams/:id/start",
+            "handler": "routes/start",
+            "auth": true
+        },
+        {
+            "method": "PUT",
+            "path": "/api/exams/sessions/:sessionId",
+            "handler": "routes/updateSession",
+            "auth": true
+        },
+        {
+            "method": "POST",
+            "path": "/api/exams/sessions/:sessionId/submit",
+            "handler": "routes/submit",
+            "auth": true
+        }
+    ],
+    "navigation": [
+        {
+            "label": "Full Exams",
+            "href": "/app/exams",
+            "icon": "GraduationCap",
+            "order": 3
+        }
+    ],
+    "config": {
+        "defaults": {
+            "aiProvider": "primary",
+            "enableAutoSave": true,
+            "autoSaveInterval": 30
+        }
+    },
+    "models": [
+        "ExamTemplate",
+        "GeneratedExam",
+        "ExamSession",
+        "ExamAttempt"
+    ]
+}

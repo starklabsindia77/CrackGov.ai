@@ -1,0 +1,74 @@
+{
+    "name": "study-groups",
+    "version": "1.0.0",
+    "displayName": "Study Groups",
+    "description": "Collaborative learning groups with discussions and shared resources",
+    "author": "CrackGov.ai Team",
+    "license": "MIT",
+    "icon": "Users",
+    "category": "collaboration",
+    "routes": [
+        {
+            "method": "POST",
+            "path": "/api/study-groups",
+            "handler": "routes/create",
+            "auth": true
+        },
+        {
+            "method": "GET",
+            "path": "/api/study-groups",
+            "handler": "routes/list",
+            "auth": true
+        },
+        {
+            "method": "GET",
+            "path": "/api/study-groups/:id",
+            "handler": "routes/get",
+            "auth": true
+        },
+        {
+            "method": "POST",
+            "path": "/api/study-groups/:id/join",
+            "handler": "routes/join",
+            "auth": true
+        },
+        {
+            "method": "POST",
+            "path": "/api/study-groups/:id/leave",
+            "handler": "routes/leave",
+            "auth": true
+        },
+        {
+            "method": "POST",
+            "path": "/api/study-groups/:id/posts",
+            "handler": "routes/createPost",
+            "auth": true
+        },
+        {
+            "method": "GET",
+            "path": "/api/study-groups/:id/posts",
+            "handler": "routes/getPosts",
+            "auth": true
+        }
+    ],
+    "navigation": [
+        {
+            "label": "Study Groups",
+            "href": "/app/groups",
+            "icon": "Users",
+            "order": 6
+        }
+    ],
+    "config": {
+        "defaults": {
+            "maxMembers": 50,
+            "allowPublicGroups": true,
+            "moderationEnabled": false
+        }
+    },
+    "models": [
+        "StudyGroup",
+        "GroupMember",
+        "GroupPost"
+    ]
+}

@@ -1,176 +1,317 @@
-import { requireAdmin } from "@/lib/admin-auth";
-import { AdminLayout } from "@/components/layout/admin-layout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { prisma } from "@/lib/prisma";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Zap, Settings, Activity, Key } from "lucide-react";
+"use client";
 
-export default async function AdminDashboardPage() {
-  await requireAdmin();
+import { useEffect, useState } from "react";
+import {
+  Users,
+  TrendingUp,
+  Activity,
+  DollarSign,
+  ArrowUp,
+  ArrowDown,
+  Puzzle,
+  FileText,
+  MessageCircle,
+  BookOpen,
+  Zap,
+  Target,
+} from "lucide-react";
 
-  const [providers, features, healthStats] = await Promise.all([
-    prisma.aiProvider.findMany({
-      include: {
-        _count: {
-          select: { keys: true },
-        },
-      },
-    }),
-    prisma.aiFeatureConfig.findMany({
-      include: {
-        primaryProvider: true,
-        secondaryProvider: true,
-      },
-    }),
-    prisma.aiProviderKey.groupBy({
-      by: ["status"],
-      _count: true,
-    }),
-  ]);
+interface DashboardStats {
+  totalUsers: number;
+  activePlugins: number;
+  totalTests: number;
+  revenue: number;
+}
 
-  const totalKeys = healthStats.reduce((sum, stat) => sum + stat._count, 0);
-  const healthyKeys =
-    healthStats.find((s) => s.status === "healthy")?._count || 0;
-  const failingKeys =
-    healthStats.find((s) => s.status === "failing")?._count || 0;
+interface PluginStat {
+  name: string;
+  usage: number;
+  trend: string;
+}
+
+export default function DashboardPage() {
+  const [stats, setStats] = useState<DashboardStats>({
+    totalUsers: 0,
+    activePlugins: 0,
+    totalTests: 0,
+    revenue: 0,
+  });
+
+  const [pluginStats, setPluginStats] = useState<PluginStat[]>([]);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    // Mock data - replace with actual API calls
+    setStats({
+      totalUsers: 14,
+      activePlugins: 4,
+      totalTests: 156,
+      revenue: 45000,
+    });
+
+    setPluginStats([
+      { name: "Study Plan", usage: 450, trend: "+12%" },
+      { name: "Mock Test", usage: 380, trend: "+8%" },
+      { name: "Doubt Chat", usage: 290, trend: "+15%" },
+      { name: "Flashcard", usage: 210, trend: "+5%" },
+    ]);
+  };
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-display-h1 text-text-primary">Admin Dashboard</h1>
-          <p className="mt-2 text-body-m text-text-secondary">
-            Manage AI providers, keys, and feature configurations
-          </p>
-        </div>
+    <div className="space-y-6">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <DashboardCard
+          title="Total Users"
+          value={stats.totalUsers}
+          change="+12.5%"
+          trend="up"
+          icon={Users}
+          color="blue"
+        />
+        <DashboardCard
+          title="Active Plugins"
+          value={stats.activePlugins}
+          change="+4"
+          trend="up"
+          icon={Puzzle}
+          color="purple"
+        />
+        <DashboardCard
+          title="Total Tests"
+          value={stats.totalTests}
+          change="+23.1%"
+          trend="up"
+          icon={FileText}
+          color="pink"
+        />
+        <DashboardCard
+          title="Revenue"
+          value={`₹${stats.revenue.toLocaleString()}`}
+          change="+18.2%"
+          trend="up"
+          icon={DollarSign}
+          color="green"
+        />
+      </div>
 
-        <div className="grid gap-6 md:grid-cols-4">
-          <Card className="border border-borderSubtle bg-bg-card">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-body-s text-text-primary font-medium">Providers</CardTitle>
-              <Zap className="h-4 w-4 text-primary-teal" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-display-h2 text-text-primary">{providers.length}</div>
-              <p className="text-body-s text-text-secondary mt-1">
-                {providers.filter((p) => p.status === "active").length} active
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="border border-borderSubtle bg-bg-card">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-body-s text-text-primary font-medium">API Keys</CardTitle>
-              <Key className="h-4 w-4 text-primary-teal" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-display-h2 text-text-primary">{totalKeys}</div>
-              <p className="text-body-s text-text-secondary mt-1">
-                {healthyKeys} healthy, {failingKeys} failing
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="border border-borderSubtle bg-bg-card">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-body-s text-text-primary font-medium">Features</CardTitle>
-              <Settings className="h-4 w-4 text-primary-teal" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-display-h2 text-text-primary">{features.length}</div>
-              <p className="text-body-s text-text-secondary mt-1">
-                Configured features
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="border border-borderSubtle bg-bg-card">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-body-s text-text-primary font-medium">Health</CardTitle>
-              <Activity className="h-4 w-4 text-primary-teal" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-display-h2 text-text-primary">
-                {totalKeys > 0
-                  ? Math.round((healthyKeys / totalKeys) * 100)
-                  : 0}
-                %
-              </div>
-              <p className="text-body-s text-text-secondary mt-1">System health</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card className="border border-borderSubtle bg-bg-card">
-            <CardHeader>
-              <CardTitle className="text-heading-h3 text-text-primary">Quick Actions</CardTitle>
-              <CardDescription className="text-body-s text-text-secondary">Common admin tasks</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Link href="/admin/providers">
-                <Button variant="outline" className="w-full justify-start border-borderSubtle text-text-primary hover:bg-bg-canvas">
-                  <Zap className="h-4 w-4 mr-2" />
-                  Manage AI Providers
-                </Button>
-              </Link>
-              <Link href="/admin/features">
-                <Button variant="outline" className="w-full justify-start border-borderSubtle text-text-primary hover:bg-bg-canvas">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Configure Features
-                </Button>
-              </Link>
-              <Link href="/admin/health">
-                <Button variant="outline" className="w-full justify-start border-borderSubtle text-text-primary hover:bg-bg-canvas">
-                  <Activity className="h-4 w-4 mr-2" />
-                  View System Health
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-
-          <Card className="border border-borderSubtle bg-bg-card">
-            <CardHeader>
-              <CardTitle className="text-heading-h3 text-text-primary">Recent Providers</CardTitle>
-              <CardDescription className="text-body-s text-text-secondary">Latest AI providers</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {providers.length === 0 ? (
-                <p className="text-body-s text-text-secondary">
-                  No providers configured yet
-                </p>
-              ) : (
-                <div className="space-y-2">
-                  {providers.slice(0, 5).map((provider) => (
-                    <div
-                      key={provider.id}
-                      className="flex justify-between items-center p-3 bg-bg-canvas rounded-lg border border-borderSubtle"
-                    >
-                      <div>
-                        <p className="text-body-s text-text-primary font-medium">{provider.name}</p>
-                        <p className="text-body-s text-text-secondary">
-                          {provider.code} • {provider._count.keys} keys
-                        </p>
-                      </div>
-                      <span
-                        className={`text-label-xs px-2 py-1 rounded-full font-medium ${
-                          provider.status === "active"
-                            ? "bg-state-success text-white"
-                            : "bg-text-secondary text-white"
-                        }`}
-                      >
-                        {provider.status}
-                      </span>
-                    </div>
-                  ))}
+      {/* Plugin Stats */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Top Plugins */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <h3 className="text-lg font-semibold text-slate-900 mb-4">
+            Top Plugins by Usage
+          </h3>
+          <div className="space-y-4">
+            {pluginStats.map((plugin, index) => (
+              <div key={plugin.name} className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white font-semibold">
+                    {index + 1}
+                  </div>
+                  <div>
+                    <p className="font-medium text-slate-900">{plugin.name}</p>
+                    <p className="text-sm text-slate-500">{plugin.usage} uses</p>
+                  </div>
                 </div>
-              )}
-            </CardContent>
-          </Card>
+                <span className="text-sm font-medium text-green-600">
+                  {plugin.trend}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Quick Stats */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+          <h3 className="text-lg font-semibold text-slate-900 mb-4">
+            System Overview
+          </h3>
+          <div className="space-y-4">
+            <QuickStat
+              label="Database Status"
+              value="Healthy"
+              icon={Activity}
+              color="green"
+            />
+            <QuickStat
+              label="API Response Time"
+              value="45ms"
+              icon={Zap}
+              color="blue"
+            />
+            <QuickStat
+              label="Cache Hit Rate"
+              value="94.2%"
+              icon={Target}
+              color="purple"
+            />
+            <QuickStat
+              label="Active Sessions"
+              value="12"
+              icon={Users}
+              color="pink"
+            />
+          </div>
         </div>
       </div>
-    </AdminLayout>
+
+      {/* Recent Activity */}
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+        <h3 className="text-lg font-semibold text-slate-900 mb-4">
+          Recent Activity
+        </h3>
+        <div className="space-y-4">
+          <ActivityItem
+            icon={Users}
+            title="New user registered"
+            description="pro1@example.com joined as Pro user"
+            time="2 minutes ago"
+            color="blue"
+          />
+          <ActivityItem
+            icon={Puzzle}
+            title="Plugin enabled"
+            description="Mock Test plugin was enabled"
+            time="15 minutes ago"
+            color="green"
+          />
+          <ActivityItem
+            icon={FileText}
+            title="Test completed"
+            description="User completed UPSC Mock Test #45"
+            time="1 hour ago"
+            color="purple"
+          />
+          <ActivityItem
+            icon={MessageCircle}
+            title="Doubt resolved"
+            description="AI resolved a History doubt"
+            time="2 hours ago"
+            color="pink"
+          />
+        </div>
+      </div>
+    </div>
   );
 }
 
+interface DashboardCardProps {
+  title: string;
+  value: string | number;
+  change: string;
+  trend: "up" | "down";
+  icon: React.ComponentType<{ className?: string }>;
+  color: "blue" | "purple" | "pink" | "green";
+}
+
+function DashboardCard({ title, value, change, trend, icon: Icon, color }: DashboardCardProps) {
+  const colors: Record<string, { bg: string; text: string; light: string }> = {
+    blue: {
+      bg: "from-blue-500 to-blue-600",
+      text: "text-blue-600",
+      light: "bg-blue-50",
+    },
+    purple: {
+      bg: "from-purple-500 to-purple-600",
+      text: "text-purple-600",
+      light: "bg-purple-50",
+    },
+    pink: {
+      bg: "from-pink-500 to-pink-600",
+      text: "text-pink-600",
+      light: "bg-pink-50",
+    },
+    green: {
+      bg: "from-green-500 to-green-600",
+      text: "text-green-600",
+      light: "bg-green-50",
+    },
+  };
+
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-lg transition-shadow">
+      <div className="flex items-center justify-between mb-4">
+        <div
+          className={`h-12 w-12 rounded-lg bg-gradient-to-br ${colors[color].bg} flex items-center justify-center`}
+        >
+          <Icon className="h-6 w-6 text-white" />
+        </div>
+        <div
+          className={`flex items-center space-x-1 text-sm font-medium ${trend === "up" ? "text-green-600" : "text-red-600"
+            }`}
+        >
+          {trend === "up" ? (
+            <ArrowUp className="h-4 w-4" />
+          ) : (
+            <ArrowDown className="h-4 w-4" />
+          )}
+          <span>{change}</span>
+        </div>
+      </div>
+      <p className="text-sm font-medium text-slate-600 mb-1">{title}</p>
+      <p className="text-3xl font-bold text-slate-900">{value}</p>
+    </div>
+  );
+}
+
+interface QuickStatProps {
+  label: string;
+  value: string;
+  icon: React.ComponentType<{ className?: string }>;
+  color: "blue" | "green" | "purple" | "pink";
+}
+
+function QuickStat({ label, value, icon: Icon, color }: QuickStatProps) {
+  const colors: Record<string, string> = {
+    blue: "bg-blue-100 text-blue-600",
+    green: "bg-green-100 text-green-600",
+    purple: "bg-purple-100 text-purple-600",
+    pink: "bg-pink-100 text-pink-600",
+  };
+
+  return (
+    <div className="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 transition-colors">
+      <div className="flex items-center space-x-3">
+        <div className={`h-10 w-10 rounded-lg ${colors[color]} flex items-center justify-center`}>
+          <Icon className="h-5 w-5" />
+        </div>
+        <span className="text-sm font-medium text-slate-700">{label}</span>
+      </div>
+      <span className="text-sm font-semibold text-slate-900">{value}</span>
+    </div>
+  );
+}
+
+interface ActivityItemProps {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  description: string;
+  time: string;
+  color: "blue" | "green" | "purple" | "pink";
+}
+
+function ActivityItem({ icon: Icon, title, description, time, color }: ActivityItemProps) {
+  const colors: Record<string, string> = {
+    blue: "bg-blue-100 text-blue-600",
+    green: "bg-green-100 text-green-600",
+    purple: "bg-purple-100 text-purple-600",
+    pink: "bg-pink-100 text-pink-600",
+  };
+
+  return (
+    <div className="flex items-start space-x-4 p-4 rounded-lg hover:bg-slate-50 transition-colors">
+      <div className={`h-10 w-10 rounded-lg ${colors[color]} flex items-center justify-center flex-shrink-0`}>
+        <Icon className="h-5 w-5" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-slate-900">{title}</p>
+        <p className="text-sm text-slate-600">{description}</p>
+      </div>
+      <span className="text-xs text-slate-500 flex-shrink-0">{time}</span>
+    </div>
+  );
+}

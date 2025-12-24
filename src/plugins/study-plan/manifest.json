@@ -1,0 +1,120 @@
+{
+    "name": "study-plan",
+    "version": "1.0.0",
+    "displayName": "AI Study Plan Generator",
+    "description": "Generate personalized study plans using AI based on exam type, target date, and weak areas",
+    "author": "CrackGov.ai Team",
+    "license": "MIT",
+    "icon": "BookOpen",
+    "category": "ai",
+    "dependencies": {
+        "core": ">=1.0.0"
+    },
+    "requiredPlugins": [],
+    "optionalPlugins": [
+        "mock-test",
+        "flashcard"
+    ],
+    "permissions": [
+        {
+            "permission": "study-plan:create",
+            "description": "Create new study plans",
+            "scope": "user"
+        },
+        {
+            "permission": "study-plan:view",
+            "description": "View study plans",
+            "scope": "user"
+        },
+        {
+            "permission": "study-plan:delete",
+            "description": "Delete study plans",
+            "scope": "user"
+        }
+    ],
+    "routes": [
+        {
+            "method": "POST",
+            "path": "/api/study-plan/generate",
+            "handler": "routes/generate",
+            "middleware": [
+                "auth",
+                "rateLimit"
+            ],
+            "auth": true,
+            "permissions": [
+                "study-plan:create"
+            ],
+            "rateLimit": {
+                "requests": 5,
+                "window": 60000
+            }
+        },
+        {
+            "method": "GET",
+            "path": "/api/study-plan",
+            "handler": "routes/list",
+            "middleware": [
+                "auth"
+            ],
+            "auth": true,
+            "permissions": [
+                "study-plan:view"
+            ]
+        },
+        {
+            "method": "GET",
+            "path": "/api/study-plan/:id",
+            "handler": "routes/get",
+            "middleware": [
+                "auth"
+            ],
+            "auth": true,
+            "permissions": [
+                "study-plan:view"
+            ]
+        },
+        {
+            "method": "DELETE",
+            "path": "/api/study-plan/:id",
+            "handler": "routes/delete",
+            "middleware": [
+                "auth"
+            ],
+            "auth": true,
+            "permissions": [
+                "study-plan:delete"
+            ]
+        }
+    ],
+    "navigation": [
+        {
+            "label": "Study Plan",
+            "href": "/app/study-plan",
+            "icon": "BookOpen",
+            "order": 1
+        }
+    ],
+    "config": {
+        "schema": "config.schema.ts",
+        "defaults": {
+            "maxPlansPerUser": 10,
+            "aiProvider": "primary",
+            "cacheResults": true,
+            "cacheTTL": 3600,
+            "defaultHoursPerDay": 4,
+            "enableNotifications": true
+        }
+    },
+    "models": [
+        "StudyPlan"
+    ],
+    "jobs": [
+        {
+            "name": "cleanup-old-plans",
+            "handler": "jobs/cleanup",
+            "schedule": "0 0 * * *",
+            "queue": "study-plan"
+        }
+    ]
+}

@@ -1,0 +1,73 @@
+{
+    "name": "bookmarks-notes",
+    "version": "1.0.0",
+    "displayName": "Bookmarks & Notes",
+    "description": "Save bookmarks and create notes for questions, tests, and study materials",
+    "author": "CrackGov.ai Team",
+    "license": "MIT",
+    "icon": "Bookmark",
+    "category": "core",
+    "routes": [
+        {
+            "method": "GET",
+            "path": "/api/bookmarks",
+            "handler": "routes/bookmarks/list",
+            "auth": true
+        },
+        {
+            "method": "POST",
+            "path": "/api/bookmarks",
+            "handler": "routes/bookmarks/create",
+            "auth": true
+        },
+        {
+            "method": "DELETE",
+            "path": "/api/bookmarks/:id",
+            "handler": "routes/bookmarks/delete",
+            "auth": true
+        },
+        {
+            "method": "GET",
+            "path": "/api/notes",
+            "handler": "routes/notes/list",
+            "auth": true
+        },
+        {
+            "method": "POST",
+            "path": "/api/notes",
+            "handler": "routes/notes/create",
+            "auth": true
+        },
+        {
+            "method": "PUT",
+            "path": "/api/notes/:id",
+            "handler": "routes/notes/update",
+            "auth": true
+        },
+        {
+            "method": "DELETE",
+            "path": "/api/notes/:id",
+            "handler": "routes/notes/delete",
+            "auth": true
+        }
+    ],
+    "navigation": [
+        {
+            "label": "My Notes",
+            "href": "/app/notes",
+            "icon": "Bookmark",
+            "order": 7
+        }
+    ],
+    "config": {
+        "defaults": {
+            "enableTags": true,
+            "enableSearch": true,
+            "maxNotesPerUser": 1000
+        }
+    },
+    "models": [
+        "Bookmark",
+        "Note"
+    ]
+}

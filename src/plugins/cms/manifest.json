@@ -1,0 +1,84 @@
+{
+    "name": "cms",
+    "version": "1.0.0",
+    "displayName": "Content Management System",
+    "description": "Manage pages, posts, FAQs, announcements, and banners",
+    "author": "CrackGov.ai Team",
+    "license": "MIT",
+    "icon": "FileEdit",
+    "category": "content",
+    "permissions": [
+        {
+            "permission": "cms:manage",
+            "description": "Manage CMS content",
+            "scope": "admin"
+        }
+    ],
+    "routes": [
+        {
+            "method": "GET",
+            "path": "/api/cms/pages",
+            "handler": "routes/pages/list"
+        },
+        {
+            "method": "POST",
+            "path": "/api/cms/pages",
+            "handler": "routes/pages/create",
+            "auth": true,
+            "permissions": [
+                "cms:manage"
+            ]
+        },
+        {
+            "method": "GET",
+            "path": "/api/cms/posts",
+            "handler": "routes/posts/list"
+        },
+        {
+            "method": "POST",
+            "path": "/api/cms/posts",
+            "handler": "routes/posts/create",
+            "auth": true,
+            "permissions": [
+                "cms:manage"
+            ]
+        },
+        {
+            "method": "GET",
+            "path": "/api/cms/faqs",
+            "handler": "routes/faqs/list"
+        },
+        {
+            "method": "GET",
+            "path": "/api/cms/announcements",
+            "handler": "routes/announcements/list"
+        },
+        {
+            "method": "GET",
+            "path": "/api/cms/banners",
+            "handler": "routes/banners/list"
+        }
+    ],
+    "adminNavigation": [
+        {
+            "label": "CMS",
+            "href": "/admin/cms",
+            "icon": "FileEdit",
+            "order": 3
+        }
+    ],
+    "config": {
+        "defaults": {
+            "enableDragDrop": true,
+            "enableVersioning": false,
+            "defaultPublished": false
+        }
+    },
+    "models": [
+        "Page",
+        "Post",
+        "Faq",
+        "Announcement",
+        "Banner"
+    ]
+}

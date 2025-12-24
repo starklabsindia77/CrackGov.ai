@@ -3,8 +3,6 @@
 
 export {
   sendPasswordResetEmail,
-  sendWelcomeEmail,
-  sendTestResultEmail,
   sendEmail,
 } from "./email-service";
 
@@ -14,11 +12,11 @@ export async function sendVerificationEmail(
 ): Promise<void> {
   // TODO: Integrate with email service (SendGrid, Resend, etc.)
   const verifyUrl = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/auth/verify-email?token=${verificationToken}`;
-  
+
   console.log("Email verification email (stubbed):");
   console.log(`To: ${email}`);
   console.log(`Verification URL: ${verifyUrl}`);
-  
+
   // In production, use:
   // await sendEmail({
   //   to: email,
@@ -29,11 +27,11 @@ export async function sendVerificationEmail(
 
 export async function sendWelcomeEmail(email: string, name?: string): Promise<void> {
   const welcomeUrl = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/app/dashboard`;
-  
+
   console.log("Welcome email (stubbed):");
   console.log(`To: ${email}`);
   console.log(`Welcome URL: ${welcomeUrl}`);
-  
+
   // In production, use:
   // await sendEmail({
   //   to: email,
@@ -57,7 +55,7 @@ export async function sendTestResultEmail(
   }
 ): Promise<void> {
   const resultUrl = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/app/test-history`;
-  
+
   console.log("Test result email (stubbed):");
   console.log(`To: ${email}`);
   console.log(`Test: ${testResult.exam}`);
@@ -66,7 +64,7 @@ export async function sendTestResultEmail(
     console.log(`Weak Topics: ${testResult.weakTopics.join(", ")}`);
   }
   console.log(`View Results: ${resultUrl}`);
-  
+
   // In production, use:
   // await sendEmail({
   //   to: email,
@@ -94,14 +92,14 @@ export async function sendStudyReminderEmail(
   }
 ): Promise<void> {
   const studyPlanUrl = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/app/study-plan`;
-  
+
   console.log("Study reminder email (stubbed):");
   console.log(`To: ${email}`);
   console.log(`Exam: ${reminder.exam}`);
   console.log(`Target Date: ${reminder.targetDate}`);
   console.log(`Days Remaining: ${reminder.daysRemaining}`);
   console.log(`Study Plan: ${studyPlanUrl}`);
-  
+
   // In production, use:
   // await sendEmail({
   //   to: email,
@@ -125,7 +123,7 @@ export async function sendWeeklyProgressEmail(
   }
 ): Promise<void> {
   const dashboardUrl = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/app/dashboard`;
-  
+
   console.log("Weekly progress email (stubbed):");
   console.log(`To: ${email}`);
   console.log(`Tests Taken: ${progress.testsTaken}`);
@@ -133,7 +131,7 @@ export async function sendWeeklyProgressEmail(
   console.log(`Improvement: ${progress.improvement > 0 ? "+" : ""}${progress.improvement.toFixed(1)}%`);
   console.log(`Top Topics: ${progress.topTopics.join(", ")}`);
   console.log(`Dashboard: ${dashboardUrl}`);
-  
+
   // In production, use:
   // await sendEmail({
   //   to: email,
@@ -166,7 +164,7 @@ export async function sendOTPEmail(email: string, otp: string): Promise<void> {
   console.log(`To: ${email}`);
   console.log(`OTP: ${otp}`);
   console.log(`Valid for 10 minutes`);
-  
+
   // In production, use:
   // await sendEmail({
   //   to: email,
@@ -185,7 +183,7 @@ export async function sendOTPSMS(phone: string, otp: string): Promise<void> {
   console.log(`To: ${phone}`);
   console.log(`OTP: ${otp}`);
   console.log(`Valid for 10 minutes`);
-  
+
   // In production, integrate with SMS service (Twilio, AWS SNS, etc.):
   // await smsService.send({
   //   to: phone,

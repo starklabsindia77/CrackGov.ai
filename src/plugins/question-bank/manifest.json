@@ -1,0 +1,94 @@
+{
+    "name": "question-bank",
+    "version": "1.0.0",
+    "displayName": "Question Bank",
+    "description": "Comprehensive question repository with filtering, search, and management capabilities",
+    "author": "CrackGov.ai Team",
+    "license": "MIT",
+    "icon": "Database",
+    "category": "content",
+    "permissions": [
+        {
+            "permission": "question-bank:view",
+            "description": "View questions"
+        },
+        {
+            "permission": "question-bank:create",
+            "description": "Create questions",
+            "scope": "admin"
+        },
+        {
+            "permission": "question-bank:edit",
+            "description": "Edit questions",
+            "scope": "admin"
+        },
+        {
+            "permission": "question-bank:delete",
+            "description": "Delete questions",
+            "scope": "admin"
+        }
+    ],
+    "routes": [
+        {
+            "method": "GET",
+            "path": "/api/question-bank",
+            "handler": "routes/list",
+            "auth": true
+        },
+        {
+            "method": "POST",
+            "path": "/api/question-bank",
+            "handler": "routes/create",
+            "auth": true,
+            "permissions": [
+                "question-bank:create"
+            ]
+        },
+        {
+            "method": "GET",
+            "path": "/api/question-bank/:id",
+            "handler": "routes/get",
+            "auth": true
+        },
+        {
+            "method": "PUT",
+            "path": "/api/question-bank/:id",
+            "handler": "routes/update",
+            "auth": true,
+            "permissions": [
+                "question-bank:edit"
+            ]
+        },
+        {
+            "method": "DELETE",
+            "path": "/api/question-bank/:id",
+            "handler": "routes/delete",
+            "auth": true,
+            "permissions": [
+                "question-bank:delete"
+            ]
+        }
+    ],
+    "navigation": [
+        {
+            "label": "Question Bank",
+            "href": "/app/question-bank",
+            "icon": "Database",
+            "order": 5,
+            "roles": [
+                "admin"
+            ]
+        }
+    ],
+    "config": {
+        "defaults": {
+            "enableFiltering": true,
+            "enableSearch": true,
+            "itemsPerPage": 20
+        }
+    },
+    "models": [
+        "QuestionBank",
+        "QuestionAttempt"
+    ]
+}
